@@ -198,36 +198,6 @@
       .panel-footer, .statusbar { grid-template-columns: 1fr; }
     }
 
-    body.kiosk {
-      padding: 0;
-      overflow: hidden;
-      background: #dfddd4;
-    }
-    body.kiosk .app {
-      max-width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-    }
-    body.kiosk .controls {
-      display: none;
-    }
-    body.kiosk .board {
-      width: min(100vw - 20px, 1280px);
-      max-height: calc(100vh - 20px);
-    }
-    body.kiosk .hero {
-      padding: 18px 24px 10px;
-    }
-    body.kiosk .station-cn { font-size: 46px; }
-    body.kiosk .station-en { font-size: 24px; }
-    body.kiosk .time { font-size: 42px; }
-    body.kiosk .dest-cn { font-size: 30px; }
-    body.kiosk .dest-en { font-size: 18px; }
-    body.kiosk .panel-footer { font-size: 18px; }
-
     body.grayscale {
       filter: grayscale(1) contrast(1.04);
     }
@@ -245,25 +215,15 @@
     @media (max-width: 900px) {
       .top-actions { justify-content: stretch; }
       .toggle-btn { flex: 1 1 auto; }
-      body.kiosk .app { padding: 0; }
-      body.kiosk .board {
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-        border-width: 0;
-      }
-      body.kiosk .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="top-actions">
-      <button id="toggleKiosk" class="toggle-btn primary">Enter kiosk mode</button>
-      <button id="toggleTheme" class="toggle-btn">Gray / night mode</button>
+      <button id="toggleTheme" class="toggle-btn primary">Normal color mode</button>
+      <button id="toggleWake" class="toggle-btn">Always on: Off</button>
     </div>
-
     <div class="controls">
       <div class="field">
         <label for="preset">Quick preset</label>
@@ -407,8 +367,9 @@
     const weatherEl = document.getElementById('weather');
     const serviceStateEl = document.getElementById('serviceState');
     const serviceMsgEl = document.getElementById('serviceMsg');
-    const toggleKioskBtn = document.getElementById('toggleKiosk');
     const toggleThemeBtn = document.getElementById('toggleTheme');
+    const toggleWakeBtn = document.getElementById('toggleWake');
+    let wakeLock = null;
     const updatedEl = document.getElementById('updated');
     const leftEl = document.getElementById('left');
     const rightEl = document.getElementById('right');
@@ -541,6 +502,57 @@
       }
     }
 
+    async function enableWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          toggleWakeBtn.textContent = 'Always on: On';
+          wakeLock.addEventListener('release', () => {
+            toggleWakeBtn.textContent = 'Always on: Off';
+          });
+        } else {
+          alert('Wake Lock is not supported on this browser/device.');
+        }
+      } catch (e) {
+        toggleWakeBtn.textContent = 'Always on: Off';
+      }
+    }
+
+    async function disableWakeLock() {
+      try {
+        if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      } catch (e) {}
+      toggleWakeBtn.textContent = 'Always on: Off';
+    }
+
+    function syncButtons() {
+      toggleThemeBtn.textContent = document.body.classList.contains('grayscale') ? 'Normal color mode' : 'Gray / night mode';
+      toggleWakeBtn.textContent = wakeLock ? 'Always on: On' : 'Always on: Off';
+    }
+
+    toggleThemeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('grayscale');
+      syncButtons();
+    });
+
+    toggleWakeBtn.addEventListener('click', async () => {
+      if (wakeLock) {
+        await disableWakeLock();
+      } else {
+        await enableWakeLock();
+      }
+      syncButtons();
+    });
+
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible' && wakeLock) {
+        await enableWakeLock();
+      }
+    });
+
     buildPresets();
     buildLines();
     buildStations('TCL');
@@ -563,30 +575,7 @@
       fetchWeather();
     });
 
-    function syncButtons() {
-      toggleKioskBtn.textContent = document.body.classList.contains('kiosk') ? 'Exit kiosk mode' : 'Enter kiosk mode';
-      toggleThemeBtn.textContent = document.body.classList.contains('grayscale') ? 'Normal color mode' : 'Gray / night mode';
-    }
-
-    toggleKioskBtn.addEventListener('click', async () => {
-      document.body.classList.toggle('kiosk');
-      if (document.body.classList.contains('kiosk')) {
-        try {
-          if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-        } catch (e) {}
-      } else {
-        try {
-          if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
-        } catch (e) {}
-      }
-      syncButtons();
-    });
-
-    toggleThemeBtn.addEventListener('click', () => {
-      document.body.classList.toggle('grayscale');
-      syncButtons();
-    });
-
+    document.body.classList.add('grayscale');
     syncButtons();
 
     setInterval(updateClock, 1000);
