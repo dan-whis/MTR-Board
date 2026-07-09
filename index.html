@@ -1,200 +1,598 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MTR Board</title>
+  <title>mtr-board-enhanced</title>
   <style>
+    :root {
+      --bg: #efeee8;
+      --panel: #f8f8f3;
+      --frame: #ffffff;
+      --text: #181818;
+      --muted: #6c6c68;
+      --line: #d7d7d1;
+      --bar: #5d646a;
+      --bar-text: #f8f8f6;
+      --chip: #767d83;
+      --footer: #ecece6;
+      --alert: #8b2d2d;
+      --good: #2e6f44;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f2ee;
-      color: #222;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
     }
-
-    .board {
-      max-width: 1000px;
-      margin: 20px auto;
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr auto auto;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: end;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    select, button {
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid #d1d1ca;
+      padding: 0 12px;
+      font-size: 16px;
       background: white;
-      border: 8px solid white;
-      border-radius: 16px;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary { background: #1f2c36; color: white; }
+    .board {
+      background: var(--panel);
+      border: 10px solid var(--frame);
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 28px rgba(0,0,0,.08);
     }
-
-    .header {
+    .hero {
+      position: relative;
+      padding: 24px 28px 12px;
       text-align: center;
-      padding: 24px 16px 10px;
+      background: linear-gradient(to bottom, #f8f8f4 0%, #f4f4ef 100%);
     }
-
-    .header .cn {
-      font-size: 42px;
-      font-weight: bold;
+    .station-cn { font-size: 42px; font-weight: 800; letter-spacing: .03em; }
+    .station-en { font-size: 24px; margin-top: 2px; }
+    .clock {
+      position: absolute;
+      right: 22px;
+      top: 20px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
-
-    .header .en {
-      font-size: 24px;
-    }
-
+    .clock-time { font-size: 24px; font-weight: 800; }
+    .clock-date { font-size: 13px; color: var(--muted); }
     .linebar {
+      background: var(--bar);
+      color: var(--bar-text);
       display: flex;
       justify-content: space-between;
-      background: #5f666b;
-      color: white;
-      padding: 10px 18px;
-      font-size: 18px;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 20px;
+      font-size: 19px;
+      font-weight: 600;
     }
-
-    .content {
+    .linebar-center {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 3px solid #52595e;
+      background: #f4f4ef;
+      flex: 0 0 auto;
+    }
+    .statusbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 16px;
+      background: #f3f2ec;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8e7e0;
+      color: #333;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill.good { background: #dcecdf; color: #214f31; }
+    .pill.warn { background: #f3dfdf; color: #7b2929; }
+    .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
     }
-
-    .column {
-      padding: 20px;
-    }
-
-    .row {
+    .col { padding: 14px 22px 22px; }
+    .train {
       display: grid;
-      grid-template-columns: 50px 1fr auto;
-      align-items: center;
+      grid-template-columns: 56px 1fr auto;
       gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #ddd;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .platform {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: var(--chip);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .dest-cn { font-size: 27px; font-weight: 800; line-height: 1.05; }
+    .dest-en { font-size: 17px; color: var(--muted); margin-top: 4px; }
+    .meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .time {
+      font-size: 38px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .01em;
+    }
+    .panel-footer {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      padding: 12px 18px;
+      background: var(--footer);
+      color: var(--muted);
+      font-size: 16px;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .service-msg {
+      margin: 12px 0 0;
+      padding: 12px 14px;
+      background: #f7eaea;
+      color: #782c2c;
+      border: 1px solid #e8c8c8;
+      border-radius: 12px;
+      font-size: 14px;
+      display: none;
+    }
+    .weather {
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) {
+      .controls { grid-template-columns: 1fr 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .clock { position: static; text-align: center; margin-top: 12px; }
+      .station-cn { font-size: 34px; }
+      .station-en { font-size: 20px; }
+      .dest-cn { font-size: 22px; }
+      .time { font-size: 28px; }
+      .linebar { font-size: 16px; }
+      .panel-footer, .statusbar { grid-template-columns: 1fr; }
     }
 
-    .platform {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #777;
-      color: white;
+    body.kiosk {
+      padding: 0;
+      overflow: hidden;
+      background: #dfddd4;
+    }
+    body.kiosk .app {
+      max-width: 100vw;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 20px;
+      padding: 10px;
+    }
+    body.kiosk .controls {
+      display: none;
+    }
+    body.kiosk .board {
+      width: min(100vw - 20px, 1280px);
+      max-height: calc(100vh - 20px);
+    }
+    body.kiosk .hero {
+      padding: 18px 24px 10px;
+    }
+    body.kiosk .station-cn { font-size: 46px; }
+    body.kiosk .station-en { font-size: 24px; }
+    body.kiosk .time { font-size: 42px; }
+    body.kiosk .dest-cn { font-size: 30px; }
+    body.kiosk .dest-en { font-size: 18px; }
+    body.kiosk .panel-footer { font-size: 18px; }
+
+    body.grayscale {
+      filter: grayscale(1) contrast(1.04);
     }
 
-    .dest-cn {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .dest-en {
-      font-size: 16px;
-      color: #666;
-    }
-
-    .time {
-      font-size: 34px;
-      font-weight: bold;
-    }
-
-    .footer {
+    .top-actions {
       display: flex;
-      justify-content: space-between;
-      background: #f0f0ea;
-      color: #666;
-      padding: 10px 16px;
-      font-size: 16px;
+      gap: 10px;
+      margin-bottom: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
     }
-
-    @media (max-width: 768px) {
-      .content {
-        grid-template-columns: 1fr;
+    .toggle-btn {
+      min-width: 132px;
+    }
+    @media (max-width: 900px) {
+      .top-actions { justify-content: stretch; }
+      .toggle-btn { flex: 1 1 auto; }
+      body.kiosk .app { padding: 0; }
+      body.kiosk .board {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        border-width: 0;
       }
-      .header .cn { font-size: 32px; }
-      .time { font-size: 26px; }
-      .dest-cn { font-size: 20px; }
+      body.kiosk .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="board">
-    <div class="header">
-      <div class="cn">青衣</div>
-      <div class="en">Tsing Yi</div>
+  <div class="app">
+    <div class="top-actions">
+      <button id="toggleKiosk" class="toggle-btn primary">Enter kiosk mode</button>
+      <button id="toggleTheme" class="toggle-btn">Gray / night mode</button>
     </div>
 
-    <div class="linebar">
-      <div>東涌綫</div>
-      <div>Tung Chung Line</div>
+    <div class="controls">
+      <div class="field">
+        <label for="preset">Quick preset</label>
+        <select id="preset"></select>
+      </div>
+      <div class="field">
+        <label for="line">Line code</label>
+        <select id="line"></select>
+      </div>
+      <div class="field">
+        <label for="station">Station code</label>
+        <select id="station"></select>
+      </div>
+      <button id="apply" class="primary">Apply</button>
+      <button id="reloadNow">Reload now</button>
     </div>
 
-    <div class="content">
-      <div class="column" id="left"></div>
-      <div class="column" id="right"></div>
+    <div class="board">
+      <div class="hero">
+        <div class="clock">
+          <div class="clock-time" id="clockTime">--:--:--</div>
+          <div class="clock-date" id="clockDate">----</div>
+        </div>
+        <div class="station-cn" id="stationCn">青衣</div>
+        <div class="station-en" id="stationEn">Tsing Yi</div>
+      </div>
+
+      <div class="linebar">
+        <div id="lineCn">東涌綫</div>
+        <div class="linebar-center"></div>
+        <div id="lineEn">Tung Chung Line</div>
+      </div>
+
+      <div class="statusbar">
+        <div class="pill" id="apiStatus">API status: loading</div>
+        <div class="pill weather" id="weather">Weather: --</div>
+        <div class="pill" id="refreshInfo">Auto refresh: 15s / full reload: 30m</div>
+      </div>
+
+      <div class="grid">
+        <div class="col">
+          <div id="left"></div>
+        </div>
+        <div class="col">
+          <div id="right"></div>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <div>MTR Next Trains</div>
+        <div id="serviceState">Service normal</div>
+        <div id="updated">Updated --:--</div>
+      </div>
     </div>
 
-    <div class="footer">
-      <div>MTR Next Trains</div>
-      <div id="updated">Updated --:--</div>
-    </div>
+    <div class="service-msg" id="serviceMsg"></div>
   </div>
 
   <script>
-    const apiUrl = "https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=TCL&sta=TSY";
+    const lineMap = {
+      AEL: {
+        cn: '機場快綫', en: 'Airport Express',
+        stations: {
+          HOK: { cn: '香港', en: 'Hong Kong' },
+          KOW: { cn: '九龍', en: 'Kowloon' },
+          TSY: { cn: '青衣', en: 'Tsing Yi' },
+          AIR: { cn: '機場', en: 'Airport' },
+          AWE: { cn: '博覽館', en: 'AsiaWorld-Expo' }
+        },
+        dir: { up: { cn: '往機場 / 博覽館', en: 'to Airport / AsiaWorld-Expo' }, down: { cn: '往香港', en: 'to Hong Kong' } }
+      },
+      TCL: {
+        cn: '東涌綫', en: 'Tung Chung Line',
+        stations: {
+          HOK: { cn: '香港', en: 'Hong Kong' },
+          KOW: { cn: '九龍', en: 'Kowloon' },
+          OLY: { cn: '奧運', en: 'Olympic' },
+          NAC: { cn: '南昌', en: 'Nam Cheong' },
+          LAK: { cn: '荔景', en: 'Lai King' },
+          TSY: { cn: '青衣', en: 'Tsing Yi' },
+          SUN: { cn: '欣澳', en: 'Sunny Bay' },
+          TUC: { cn: '東涌', en: 'Tung Chung' }
+        },
+        dir: { up: { cn: '往東涌', en: 'to Tung Chung' }, down: { cn: '往香港', en: 'to Hong Kong' } }
+      },
+      TKL: {
+        cn: '將軍澳綫', en: 'Tseung Kwan O Line',
+        stations: {
+          NOP: { cn: '北角', en: 'North Point' },
+          QUB: { cn: '鰂魚涌', en: 'Quarry Bay' },
+          YAT: { cn: '油塘', en: 'Yau Tong' },
+          TIK: { cn: '調景嶺', en: 'Tiu Keng Leng' },
+          TKO: { cn: '將軍澳', en: 'Tseung Kwan O' },
+          LHP: { cn: '康城', en: 'LOHAS Park' },
+          HAH: { cn: '坑口', en: 'Hang Hau' },
+          POA: { cn: '寶琳', en: 'Po Lam' }
+        },
+        dir: { up: { cn: '上行', en: 'UP direction' }, down: { cn: '下行', en: 'DOWN direction' } }
+      },
+      EAL: {
+        cn: '東鐵綫', en: 'East Rail Line',
+        stations: {
+          ADM: { cn: '金鐘', en: 'Admiralty' }, EXC: { cn: '會展', en: 'Exhibition Centre' }, HUH: { cn: '紅磡', en: 'Hung Hom' },
+          MKK: { cn: '旺角東', en: 'Mong Kok East' }, KOT: { cn: '九龍塘', en: 'Kowloon Tong' }, TAW: { cn: '大圍', en: 'Tai Wai' },
+          SHT: { cn: '沙田', en: 'Sha Tin' }, FOT: { cn: '火炭', en: 'Fo Tan' }, RAC: { cn: '馬場', en: 'Racecourse' },
+          UNI: { cn: '大學', en: 'University' }, TAP: { cn: '大埔墟', en: 'Tai Po Market' }, TWO: { cn: '太和', en: 'Tai Wo' },
+          FAN: { cn: '粉嶺', en: 'Fanling' }, SHS: { cn: '上水', en: 'Sheung Shui' }, LOW: { cn: '羅湖', en: 'Lo Wu' }, LMC: { cn: '落馬洲', en: 'Lok Ma Chau' }
+        },
+        dir: { up: { cn: '北行', en: 'Northbound' }, down: { cn: '南行', en: 'Southbound' } }
+      },
+      TWL: {
+        cn: '荃灣綫', en: 'Tsuen Wan Line',
+        stations: {
+          CEN: { cn: '中環', en: 'Central' }, ADM: { cn: '金鐘', en: 'Admiralty' }, TST: { cn: '尖沙咀', en: 'Tsim Sha Tsui' },
+          JOR: { cn: '佐敦', en: 'Jordan' }, YMT: { cn: '油麻地', en: 'Yau Ma Tei' }, MOK: { cn: '旺角', en: 'Mong Kok' },
+          PRE: { cn: '太子', en: 'Prince Edward' }, SSP: { cn: '深水埗', en: 'Sham Shui Po' }, CSW: { cn: '長沙灣', en: 'Cheung Sha Wan' },
+          LCK: { cn: '荔枝角', en: 'Lai Chi Kok' }, MEF: { cn: '美孚', en: 'Mei Foo' }, LAK: { cn: '荔景', en: 'Lai King' },
+          KWF: { cn: '葵芳', en: 'Kwai Fong' }, KWH: { cn: '葵興', en: 'Kwai Hing' }, TWH: { cn: '大窩口', en: 'Tai Wo Hau' }, TSW: { cn: '荃灣', en: 'Tsuen Wan' }
+        },
+        dir: { up: { cn: '往荃灣', en: 'to Tsuen Wan' }, down: { cn: '往中環', en: 'to Central' } }
+      }
+    };
 
-    function formatTime(dateString) {
-      const d = new Date(dateString);
-      if (isNaN(d)) return "--:--";
-      return d.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      });
+    const presets = [
+      { name: '東涌綫｜青衣 Tsing Yi', line: 'TCL', sta: 'TSY' },
+      { name: '東涌綫｜荔景 Lai King', line: 'TCL', sta: 'LAK' },
+      { name: '東涌綫｜香港 Hong Kong', line: 'TCL', sta: 'HOK' },
+      { name: '機場快綫｜九龍 Kowloon', line: 'AEL', sta: 'KOW' },
+      { name: '荃灣綫｜金鐘 Admiralty', line: 'TWL', sta: 'ADM' },
+      { name: '東鐵綫｜金鐘 Admiralty', line: 'EAL', sta: 'ADM' }
+    ];
+
+    const presetEl = document.getElementById('preset');
+    const lineEl = document.getElementById('line');
+    const stationEl = document.getElementById('station');
+    const stationCnEl = document.getElementById('stationCn');
+    const stationEnEl = document.getElementById('stationEn');
+    const lineCnEl = document.getElementById('lineCn');
+    const lineEnEl = document.getElementById('lineEn');
+    const apiStatusEl = document.getElementById('apiStatus');
+    const weatherEl = document.getElementById('weather');
+    const serviceStateEl = document.getElementById('serviceState');
+    const serviceMsgEl = document.getElementById('serviceMsg');
+    const toggleKioskBtn = document.getElementById('toggleKiosk');
+    const toggleThemeBtn = document.getElementById('toggleTheme');
+    const updatedEl = document.getElementById('updated');
+    const leftEl = document.getElementById('left');
+    const rightEl = document.getElementById('right');
+
+    function buildPresets() {
+      presetEl.innerHTML = presets.map((p, i) => `<option value="${i}">${p.name}</option>`).join('');
     }
 
-    function createRow(platform, cn, en, time) {
+    function buildLines() {
+      lineEl.innerHTML = Object.entries(lineMap).map(([code, data]) => `<option value="${code}">${code} — ${data.cn} / ${data.en}</option>`).join('');
+    }
+
+    function buildStations(selectedLine) {
+      const stations = lineMap[selectedLine].stations;
+      stationEl.innerHTML = Object.entries(stations).map(([code, data]) => `<option value="${code}">${code} — ${data.cn} / ${data.en}</option>`).join('');
+    }
+
+    function applySelection(line, sta) {
+      lineEl.value = line;
+      buildStations(line);
+      stationEl.value = sta;
+      const lineData = lineMap[line];
+      const staData = lineData.stations[sta];
+      lineCnEl.textContent = lineData.cn;
+      lineEnEl.textContent = lineData.en;
+      stationCnEl.textContent = staData.cn;
+      stationEnEl.textContent = staData.en;
+      fetchMtr();
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clockTime').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      document.getElementById('clockDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function formatTime(s) {
+      const d = new Date(s.replace(' ', 'T'));
+      if (isNaN(d)) return '--:--';
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function row(item, dirTextCn, dirTextEn) {
+      const plat = item?.plat || '-';
+      const time = item?.time ? formatTime(item.time) : '--:--';
+      const extra = item?.timetype ? `Type: ${item.timetype}` : `Seq ${item?.seq || '-'}`;
       return `
-        <div class="row">
-          <div class="platform">${platform}</div>
+        <div class="train">
+          <div class="platform">${plat}</div>
           <div>
-            <div class="dest-cn">${cn}</div>
-            <div class="dest-en">${en}</div>
+            <div class="dest-cn">${dirTextCn}</div>
+            <div class="dest-en">${dirTextEn}</div>
+            <div class="meta">${extra}</div>
           </div>
           <div class="time">${time}</div>
-        </div>
-      `;
+        </div>`;
     }
 
-    async function loadData() {
+    function emptyRow() {
+      return `
+        <div class="train">
+          <div class="platform">-</div>
+          <div>
+            <div class="dest-cn">暫無資料</div>
+            <div class="dest-en">No data</div>
+            <div class="meta">Waiting for update</div>
+          </div>
+          <div class="time">--:--</div>
+        </div>`;
+    }
+
+    async function fetchWeather() {
       try {
-        const response = await fetch(apiUrl);
-        const json = await response.json();
-
-        const stationKey = "TCL-TSY";
-        const up = json.data?.[stationKey]?.UP || [];
-        const down = json.data?.[stationKey]?.DOWN || [];
-
-        document.getElementById("left").innerHTML =
-          down.slice(0, 4).map(item =>
-            createRow("3", "往東涌", "to Tung Chung", formatTime(item.time))
-          ).join("");
-
-        document.getElementById("right").innerHTML =
-          up.slice(0, 4).map(item =>
-            createRow("4", "往香港", "to Hong Kong", formatTime(item.time))
-          ).join("");
-
-        document.getElementById("updated").textContent =
-          "Updated " + new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-          });
-      } catch (error) {
-        document.getElementById("left").innerHTML =
-          createRow("-", "資料更新中", "Loading", "--:--");
-        document.getElementById("right").innerHTML =
-          createRow("-", "資料更新中", "Loading", "--:--");
+        const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
+        const data = await res.json();
+        const temp = data.temperature?.data?.[0]?.value;
+        const hum = data.humidity?.data?.[0]?.value;
+        weatherEl.textContent = `Weather: ${temp ?? '--'}°C / RH ${hum ?? '--'}%`;
+      } catch (e) {
+        weatherEl.textContent = 'Weather: unavailable';
       }
     }
 
-    loadData();
-    setInterval(loadData, 15000);
+    async function fetchMtr() {
+      const line = lineEl.value;
+      const sta = stationEl.value;
+      const api = `https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=${line}&sta=${sta}&lang=TC`;
+      const key = `${line}-${sta}`;
+      const lineData = lineMap[line];
+      apiStatusEl.textContent = 'API status: loading';
+      apiStatusEl.className = 'pill';
+      serviceMsgEl.style.display = 'none';
+      serviceMsgEl.textContent = '';
+      try {
+        const res = await fetch(api);
+        const json = await res.json();
+
+        if (json.status === 0) {
+          apiStatusEl.textContent = 'API status: alert';
+          apiStatusEl.className = 'pill warn';
+          serviceStateEl.textContent = 'Service alert';
+          serviceMsgEl.style.display = 'block';
+          serviceMsgEl.textContent = json.message || 'Special train service arrangements are in place.';
+          leftEl.innerHTML = emptyRow();
+          rightEl.innerHTML = emptyRow();
+          updatedEl.textContent = 'Updated --:--';
+          return;
+        }
+
+        const payload = json.data?.[key] || {};
+        const up = payload.UP || [];
+        const down = payload.DOWN || [];
+
+        leftEl.innerHTML = (up.length ? up.slice(0,4) : [null]).map(item => item ? row(item, lineData.dir.up.cn, lineData.dir.up.en) : emptyRow()).join('');
+        rightEl.innerHTML = (down.length ? down.slice(0,4) : [null]).map(item => item ? row(item, lineData.dir.down.cn, lineData.dir.down.en) : emptyRow()).join('');
+
+        const delayed = json.isdelay === 'Y';
+        apiStatusEl.textContent = delayed ? 'API status: delayed / limited data' : 'API status: normal';
+        apiStatusEl.className = delayed ? 'pill warn' : 'pill good';
+        serviceStateEl.textContent = delayed ? 'Delay / limited data' : 'Service normal';
+        updatedEl.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      } catch (e) {
+        apiStatusEl.textContent = 'API status: error';
+        apiStatusEl.className = 'pill warn';
+        serviceStateEl.textContent = 'Connection error';
+        leftEl.innerHTML = emptyRow();
+        rightEl.innerHTML = emptyRow();
+      }
+    }
+
+    buildPresets();
+    buildLines();
+    buildStations('TCL');
+    applySelection('TCL', 'TSY');
+    fetchWeather();
+    updateClock();
+
+    presetEl.addEventListener('change', () => {
+      const p = presets[Number(presetEl.value)];
+      applySelection(p.line, p.sta);
+    });
+    lineEl.addEventListener('change', () => {
+      buildStations(lineEl.value);
+    });
+    document.getElementById('apply').addEventListener('click', () => {
+      applySelection(lineEl.value, stationEl.value);
+    });
+    document.getElementById('reloadNow').addEventListener('click', () => {
+      fetchMtr();
+      fetchWeather();
+    });
+
+    function syncButtons() {
+      toggleKioskBtn.textContent = document.body.classList.contains('kiosk') ? 'Exit kiosk mode' : 'Enter kiosk mode';
+      toggleThemeBtn.textContent = document.body.classList.contains('grayscale') ? 'Normal color mode' : 'Gray / night mode';
+    }
+
+    toggleKioskBtn.addEventListener('click', async () => {
+      document.body.classList.toggle('kiosk');
+      if (document.body.classList.contains('kiosk')) {
+        try {
+          if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+        } catch (e) {}
+      } else {
+        try {
+          if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+        } catch (e) {}
+      }
+      syncButtons();
+    });
+
+    toggleThemeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('grayscale');
+      syncButtons();
+    });
+
+    syncButtons();
+
+    setInterval(updateClock, 1000);
+    setInterval(fetchMtr, 15000);
+    setInterval(fetchWeather, 600000);
+    setTimeout(() => location.reload(), 1800000);
   </script>
 </body>
 </html>
