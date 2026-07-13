@@ -161,6 +161,7 @@
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: .01em;
+      text-align: right;
     }
     .panel-footer {
       display: grid;
@@ -516,9 +517,37 @@
       return pad(d.getHours()) + ':' + pad(d.getMinutes());
     }
 
+    function diffMinutesFromNow(s) {
+      if (!s) return '';
+      var str = String(s).trim();
+      str = str.replace(/(Z|[+-]\d{2}:?\d{2})$/, '');
+      str = str.replace('T', ' ');
+      if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(str)) {
+        str = str + ':00';
+      }
+      var m = str.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
+      if (!m) return '';
+      var year   = Number(m[1]);
+      var month  = Number(m[2]) - 1;
+      var day    = Number(m[3]);
+      var hour   = Number(m[4]);
+      var minute = Number(m[5]);
+      var second = Number(m[6]);
+      var target = new Date(year, month, day, hour, minute, second);
+      if (isNaN(target.getTime())) return '';
+      var now = new Date();
+      var diffMs = target.getTime() - now.getTime();
+      var diffMin = Math.round(diffMs / 60000);
+      if (diffMin < 0) return '';
+      if (diffMin === 0) return 'Now';
+      if (diffMin === 1) return '1 min';
+      return diffMin + ' mins';
+    }
+
     function row(item, dirTextCn, dirTextEn) {
       const plat = item && item.plat ? item.plat : '-';
-      const time = item && item.time ? formatTime(item.time) : '--:--';
+      const timeStr = item && item.time ? formatTime(item.time) : '--:--';
+      const etaStr = item && item.time ? diffMinutesFromNow(item.time) : '';
       const extra = item && item.timetype ? 'Type: ' + item.timetype : 'Seq ' + ((item && item.seq) ? item.seq : '-');
       return `
         <div class="train">
@@ -528,7 +557,10 @@
             <div class="dest-en">${dirTextEn}</div>
             <div class="meta">${extra}</div>
           </div>
-          <div class="time">${time}</div>
+          <div class="time">
+            <div>${timeStr}</div>
+            <div style="font-size:14px;color:#777;margin-top:4px;">${etaStr}</div>
+          </div>
         </div>`;
     }
 
@@ -541,7 +573,10 @@
             <div class="dest-en">No data</div>
             <div class="meta">Waiting for update</div>
           </div>
-          <div class="time">--:--</div>
+          <div class="time">
+            <div>--:--</div>
+            <div style="font-size:14px;color:#777;margin-top:4px;"></div>
+          </div>
         </div>`;
     }
 
