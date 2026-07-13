@@ -505,9 +505,9 @@
     }
 
     function row(item, dirTextCn, dirTextEn) {
-      const plat = item?.plat || '-';
-      const time = item?.time ? formatTime(item.time) : '--:--';
-      const extra = item?.timetype ? `Type: ${item.timetype}` : `Seq ${item?.seq || '-'}`;
+      const plat = item && item.plat ? item.plat : '-';
+      const time = item && item.time ? formatTime(item.time) : '--:--';
+      const extra = item && item.timetype ? 'Type: ' + item.timetype : 'Seq ' + ((item && item.seq) ? item.seq : '-');
       return `
         <div class="train">
           <div class="platform">${plat}</div>
@@ -537,9 +537,9 @@
       try {
         const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
         const data = await res.json();
-        const temp = data.temperature?.data?.[0]?.value;
-        const hum = data.humidity?.data?.[0]?.value;
-        weatherEl.textContent = `Weather: ${temp ?? '--'}°C / RH ${hum ?? '--'}%`;
+        var temp = data && data.temperature && data.temperature.data && data.temperature.data[0] ? data.temperature.data[0].value : '--';
+        var hum = data && data.humidity && data.humidity.data && data.humidity.data[0] ? data.humidity.data[0].value : '--';
+        weatherEl.textContent = 'Weather: ' + temp + '°C / RH ' + hum + '%';
       } catch (e) {
         weatherEl.textContent = 'Weather: unavailable';
       }
@@ -571,14 +571,19 @@
           return;
         }
 
-        const payload = json.data?.[key] || {};
-        const up = payload.UP || [];
-        const down = payload.DOWN || [];
+        const payload = json.data && json.data[key] ? json.data[key] : {};
+        var up = payload.UP || [];
+        var down = payload.DOWN || [];
 
-        leftEl.innerHTML = (up.length ? up.slice(0,4) : [null]).map(item => item ? row(item, lineData.dir.up.cn, lineData.dir.up.en) : emptyRow()).join('');
-        rightEl.innerHTML = (down.length ? down.slice(0,4) : [null]).map(item => item ? row(item, lineData.dir.down.cn, lineData.dir.down.en) : emptyRow()).join('');
+        leftEl.innerHTML = (up.length ? up.slice(0,4) : [null]).map(function(item) {
+          return item ? row(item, lineData.dir.up.cn, lineData.dir.up.en) : emptyRow();
+        }).join('');
 
-        const delayed = json.isdelay === 'Y';
+        rightEl.innerHTML = (down.length ? down.slice(0,4) : [null]).map(function(item) {
+          return item ? row(item, lineData.dir.down.cn, lineData.dir.down.en) : emptyRow();
+        }).join('');
+
+        var delayed = json.isdelay === 'Y';
         apiStatusEl.textContent = delayed ? 'API status: delayed / limited data' : 'API status: normal';
         apiStatusEl.className = delayed ? 'pill warn' : 'pill good';
         serviceStateEl.textContent = delayed ? 'Delay / limited data' : 'Service normal';
@@ -597,7 +602,7 @@
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
           toggleWakeBtn.textContent = 'Always on: On';
-          wakeLock.addEventListener('release', () => {
+          wakeLock.addEventListener('release', function() {
             toggleWakeBtn.textContent = 'Always on: Off';
           });
         } else {
@@ -623,12 +628,12 @@
       toggleWakeBtn.textContent = wakeLock ? 'Always on: On' : 'Always on: Off';
     }
 
-    toggleThemeBtn.addEventListener('click', () => {
+    toggleThemeBtn.addEventListener('click', function() {
       document.body.classList.toggle('grayscale');
       syncButtons();
     });
 
-    toggleWakeBtn.addEventListener('click', async () => {
+    toggleWakeBtn.addEventListener('click', async function() {
       if (wakeLock) {
         await disableWakeLock();
       } else {
@@ -637,7 +642,7 @@
       syncButtons();
     });
 
-    document.addEventListener('visibilitychange', async () => {
+    document.addEventListener('visibilitychange', async function() {
       if (document.visibilityState === 'visible' && wakeLock) {
         await enableWakeLock();
       }
@@ -650,17 +655,17 @@
     fetchWeather();
     updateClock();
 
-    presetEl.addEventListener('change', () => {
-      const p = presets[Number(presetEl.value)];
+    presetEl.addEventListener('change', function() {
+      var p = presets[Number(presetEl.value)];
       applySelection(p.line, p.sta);
     });
-    lineEl.addEventListener('change', () => {
+    lineEl.addEventListener('change', function() {
       buildStations(lineEl.value);
     });
-    document.getElementById('apply').addEventListener('click', () => {
+    document.getElementById('apply').addEventListener('click', function() {
       applySelection(lineEl.value, stationEl.value);
     });
-    document.getElementById('reloadNow').addEventListener('click', () => {
+    document.getElementById('reloadNow').addEventListener('click', function() {
       fetchMtr();
       fetchWeather();
     });
@@ -671,7 +676,7 @@
     setInterval(updateClock, 1000);
     setInterval(fetchMtr, 15000);
     setInterval(fetchWeather, 600000);
-    setTimeout(() => location.reload(), 1800000);
+    setTimeout(function() { location.reload(); }, 1800000);
   </script>
 </body>
 </html>
