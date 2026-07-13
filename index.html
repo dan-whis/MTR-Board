@@ -223,6 +223,7 @@
     <div class="top-actions">
       <button id="toggleTheme" class="toggle-btn primary">Normal color mode</button>
       <button id="toggleWake" class="toggle-btn">Always on: Off</button>
+      <button id="toggleFullscreen" class="toggle-btn">Fit to screen</button>
     </div>
     <div class="controls">
       <div class="field">
@@ -459,6 +460,7 @@
     const serviceMsgEl = document.getElementById('serviceMsg');
     const toggleThemeBtn = document.getElementById('toggleTheme');
     const toggleWakeBtn = document.getElementById('toggleWake');
+    const toggleFullscreenBtn = document.getElementById('toggleFullscreen');
     let wakeLock = null;
     const updatedEl = document.getElementById('updated');
     const leftEl = document.getElementById('left');
@@ -499,9 +501,19 @@
     }
 
     function formatTime(s) {
-      const d = new Date(s.replace(' ', 'T'));
-      if (isNaN(d)) return '--:--';
-      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      if (!s) return '--:--';
+      var m = String(s).match(/^(\\d{4})-(\\d{2})-(\\d{2})\\s+(\\d{2}):(\\d{2}):(\\d{2})$/);
+      if (!m) return '--:--';
+      var d = new Date(
+        Number(m[1]),
+        Number(m[2]) - 1,
+        Number(m[3]),
+        Number(m[4]),
+        Number(m[5]),
+        Number(m[6])
+      );
+      if (isNaN(d.getTime())) return '--:--';
+      return pad(d.getHours()) + ':' + pad(d.getMinutes());
     }
 
     function row(item, dirTextCn, dirTextEn) {
@@ -597,6 +609,40 @@
       }
     }
 
+    function getFullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function syncFullscreenButton() {
+      var active = !!getFullscreenElement();
+      toggleFullscreenBtn.textContent = active ? 'Exit full screen' : 'Fit to screen';
+    }
+
+    async function enterFullscreen() {
+      var elem = document.documentElement;
+      try {
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen();
+        } else {
+          alert('Fullscreen is not supported on this iPad/browser.');
+        }
+      } catch (e) {
+        alert('Unable to enter fullscreen on this iPad/browser.');
+      }
+    }
+
+    async function exitFullscreen() {
+      try {
+        if (document.exitFullscreen && document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+          await document.webkitExitFullscreen();
+        }
+      } catch (e) {}
+    }
+
     async function enableWakeLock() {
       try {
         if ('wakeLock' in navigator) {
@@ -631,6 +677,7 @@
     toggleThemeBtn.addEventListener('click', function() {
       document.body.classList.toggle('grayscale');
       syncButtons();
+      syncFullscreenButton();
     });
 
     toggleWakeBtn.addEventListener('click', async function() {
@@ -640,6 +687,7 @@
         await enableWakeLock();
       }
       syncButtons();
+      syncFullscreenButton();
     });
 
     document.addEventListener('visibilitychange', async function() {
@@ -647,6 +695,18 @@
         await enableWakeLock();
       }
     });
+
+    toggleFullscreenBtn.addEventListener('click', async function() {
+      if (getFullscreenElement()) {
+        await exitFullscreen();
+      } else {
+        await enterFullscreen();
+      }
+      syncFullscreenButton();
+    });
+
+    document.addEventListener('fullscreenchange', syncFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
 
     buildPresets();
     buildLines();
@@ -672,6 +732,7 @@
 
     document.body.classList.add('grayscale');
     syncButtons();
+    syncFullscreenButton();
 
     setInterval(updateClock, 1000);
     setInterval(fetchMtr, 15000);
