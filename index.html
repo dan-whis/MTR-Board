@@ -6,7 +6,7 @@
         content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>MTR Next Trains</title>
+  <title>MTR Next Trains — Colour &amp; Hong Kong First</title>
 
   <style>
     :root {
@@ -16,14 +16,20 @@
       --text: #181818;
       --muted: #6c6c68;
       --line: #d7d7d1;
-      --bar: #5d646a;
-      --bar-text: #f8f8f6;
+      --bar: #f7943e;
+      --bar-text: #181818;
       --chip: #767d83;
       --footer: #ecece6;
     }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
 
     html {
       background: var(--bg);
@@ -113,7 +119,7 @@
       border: 10px solid var(--frame);
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 10px 28px rgba(0,0,0,.08);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .08);
     }
 
     .hero {
@@ -170,7 +176,7 @@
       height: 34px;
       margin: 0 16px;
       border-radius: 999px;
-      border: 3px solid #52595e;
+      border: 3px solid rgba(0, 0, 0, .25);
       background: #f4f4ef;
       flex: 0 0 auto;
     }
@@ -207,6 +213,11 @@
       color: #7b2929;
     }
 
+    /*
+     * HTML order is always:
+     * 1. DOWN: towards Hong Kong at Tsing Yi
+     * 2. UP: towards Tung Chung at Tsing Yi
+     */
     .grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -305,13 +316,23 @@
       min-width: 0;
     }
 
+    /* Stack in HTML order on phones and tablets. */
     @media (max-width: 900px) {
       .controls {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       }
 
       .grid {
-        grid-template-columns: minmax(0, 1fr);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .grid > .col {
+        width: 100%;
+      }
+
+      .col-up {
+        border-top: 1px solid var(--line);
       }
 
       .clock {
@@ -320,11 +341,25 @@
         margin-top: 12px;
       }
 
-      .station-cn { font-size: 34px; }
-      .station-en { font-size: 20px; }
-      .dest-cn { font-size: 22px; }
-      .time { font-size: 28px; }
-      .linebar { font-size: 16px; }
+      .station-cn {
+        font-size: 34px;
+      }
+
+      .station-en {
+        font-size: 20px;
+      }
+
+      .dest-cn {
+        font-size: 22px;
+      }
+
+      .time {
+        font-size: 28px;
+      }
+
+      .linebar {
+        font-size: 16px;
+      }
 
       .panel-footer,
       .statusbar {
@@ -338,8 +373,13 @@
 
     /* iPhone portrait layout */
     @media (max-width: 600px) {
-      body { padding: 8px; }
-      .app { width: 100%; }
+      body {
+        padding: 8px;
+      }
+
+      .app {
+        width: 100%;
+      }
 
       .top-actions {
         display: grid;
@@ -373,7 +413,9 @@
         grid-column: 1 / -1;
       }
 
-      label { font-size: 12px; }
+      label {
+        font-size: 12px;
+      }
 
       select {
         font-size: 16px;
@@ -415,8 +457,13 @@
         text-align: center;
       }
 
-      .clock-time { font-size: 22px; }
-      .clock-date { font-size: 12px; }
+      .clock-time {
+        font-size: 22px;
+      }
+
+      .clock-date {
+        font-size: 12px;
+      }
 
       .linebar {
         padding: 9px 12px;
@@ -441,22 +488,11 @@
         white-space: normal;
       }
 
-      .grid {
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* DOWN trains: Hong Kong-bound at Tsing Yi. */
-      .col-down {
-        order: -1;
-      }
-
       .col {
         padding: 4px 12px 12px;
       }
 
       .col-up {
-        border-top: 1px solid var(--line);
         padding-top: 10px;
       }
 
@@ -484,7 +520,9 @@
         overflow-wrap: break-word;
       }
 
-      .meta { font-size: 11px; }
+      .meta {
+        font-size: 11px;
+      }
 
       .time {
         font-size: 28px;
@@ -520,22 +558,33 @@
         font-size: 18px;
       }
 
-      .dest-cn { font-size: 19px; }
-      .dest-en { font-size: 12px; }
-      .time { font-size: 25px; }
+      .dest-cn {
+        font-size: 19px;
+      }
+
+      .dest-en {
+        font-size: 12px;
+      }
+
+      .time {
+        font-size: 25px;
+      }
     }
   </style>
 </head>
 
-<body class="grayscale">
+<!-- Start in colour mode, not grayscale. -->
+<body>
   <div class="app">
     <div class="top-actions">
       <button id="toggleTheme" class="toggle-btn primary">
-        Normal color mode
+        Gray / night mode
       </button>
+
       <button id="toggleWake" class="toggle-btn">
         Always on: Off
       </button>
+
       <button id="toggleFullscreen" class="toggle-btn">
         Fit to screen
       </button>
@@ -586,12 +635,14 @@
         </div>
       </div>
 
+      <!-- Hong Kong-bound section comes FIRST in the HTML. -->
       <div class="grid">
-        <div class="col col-up">
-          <div id="left"></div>
-        </div>
         <div class="col col-down">
           <div id="right"></div>
+        </div>
+
+        <div class="col col-up">
+          <div id="left"></div>
         </div>
       </div>
 
@@ -612,9 +663,14 @@
      */
     function makeLine(cn, en, stationText, upCn, upEn, downCn, downEn) {
       var stations = {};
+
       stationText.split(';').forEach(function(entry) {
         var parts = entry.split('|');
-        stations[parts[0]] = { cn: parts[1], en: parts[2] };
+
+        stations[parts[0]] = {
+          cn: parts[1],
+          en: parts[2]
+        };
       });
 
       return {
@@ -622,75 +678,121 @@
         en: en,
         stations: stations,
         dir: {
-          up: { cn: upCn, en: upEn },
-          down: { cn: downCn, en: downEn }
+          up: {
+            cn: upCn,
+            en: upEn
+          },
+          down: {
+            cn: downCn,
+            en: downEn
+          }
         }
       };
     }
 
     var lineMap = {
       AEL: makeLine(
-        '機場快綫', 'Airport Express',
+        '機場快綫',
+        'Airport Express',
         'HOK|香港|Hong Kong;KOW|九龍|Kowloon;TSY|青衣|Tsing Yi;AIR|機場|Airport;AWE|博覽館|AsiaWorld-Expo',
-        '往機場 / 博覽館', 'to Airport / AsiaWorld-Expo',
-        '往香港', 'to Hong Kong'
+        '往機場 / 博覽館',
+        'to Airport / AsiaWorld-Expo',
+        '往香港',
+        'to Hong Kong'
       ),
 
       TCL: makeLine(
-        '東涌綫', 'Tung Chung Line',
+        '東涌綫',
+        'Tung Chung Line',
         'HOK|香港|Hong Kong;KOW|九龍|Kowloon;OLY|奧運|Olympic;NAC|南昌|Nam Cheong;LAK|荔景|Lai King;TSY|青衣|Tsing Yi;SUN|欣澳|Sunny Bay;TUC|東涌|Tung Chung',
-        '往東涌', 'to Tung Chung',
-        '往香港', 'to Hong Kong'
+        '往東涌',
+        'to Tung Chung',
+        '往香港',
+        'to Hong Kong'
       ),
 
       TML: makeLine(
-        '屯馬綫', 'Tuen Ma Line',
+        '屯馬綫',
+        'Tuen Ma Line',
         'WKS|烏溪沙|Wu Kai Sha;MOS|馬鞍山|Ma On Shan;HEO|恆安|Heng On;TSH|大水坑|Tai Shui Hang;SHM|石門|Shek Mun;CIO|第一城|City One;STW|沙田圍|Sha Tin Wai;CKT|車公廟|Che Kung Temple;TAW|大圍|Tai Wai;HIK|顯徑|Hin Keng;DIH|鑽石山|Diamond Hill;KAT|啟德|Kai Tak;SUW|宋皇臺|Sung Wong Toi;TKW|土瓜灣|To Kwa Wan;HOM|何文田|Ho Man Tin;HUH|紅磡|Hung Hom;ETS|尖東|East Tsim Sha Tsui;AUS|柯士甸|Austin;NAC|南昌|Nam Cheong;MEF|美孚|Mei Foo;TWW|荃灣西|Tsuen Wan West;KSR|錦上路|Kam Sheung Road;YUL|元朗|Yuen Long;LOP|朗屏|Long Ping;TIS|天水圍|Tin Shui Wai;SIH|兆康|Siu Hong;TUM|屯門|Tuen Mun',
-        '往屯門', 'to Tuen Mun',
-        '往烏溪沙', 'to Wu Kai Sha'
+        '往屯門',
+        'to Tuen Mun',
+        '往烏溪沙',
+        'to Wu Kai Sha'
       ),
 
       TKL: makeLine(
-        '將軍澳綫', 'Tseung Kwan O Line',
+        '將軍澳綫',
+        'Tseung Kwan O Line',
         'NOP|北角|North Point;QUB|鰂魚涌|Quarry Bay;YAT|油塘|Yau Tong;TIK|調景嶺|Tiu Keng Leng;TKO|將軍澳|Tseung Kwan O;LHP|康城|LOHAS Park;HAH|坑口|Hang Hau;POA|寶琳|Po Lam',
-        '往寶琳 / 康城', 'to Po Lam / LOHAS Park',
-        '往調景嶺 / 北角', 'to Tiu Keng Leng / North Point'
+        '往寶琳 / 康城',
+        'to Po Lam / LOHAS Park',
+        '往調景嶺 / 北角',
+        'to Tiu Keng Leng / North Point'
       ),
 
       EAL: makeLine(
-        '東鐵綫', 'East Rail Line',
+        '東鐵綫',
+        'East Rail Line',
         'ADM|金鐘|Admiralty;EXC|會展|Exhibition Centre;HUH|紅磡|Hung Hom;MKK|旺角東|Mong Kok East;KOT|九龍塘|Kowloon Tong;TAW|大圍|Tai Wai;SHT|沙田|Sha Tin;FOT|火炭|Fo Tan;RAC|馬場|Racecourse;UNI|大學|University;TAP|大埔墟|Tai Po Market;TWO|太和|Tai Wo;FAN|粉嶺|Fanling;SHS|上水|Sheung Shui;LOW|羅湖|Lo Wu;LMC|落馬洲|Lok Ma Chau',
-        '往羅湖 / 落馬洲', 'to Lo Wu / Lok Ma Chau',
-        '往金鐘', 'to Admiralty'
+        '往羅湖 / 落馬洲',
+        'to Lo Wu / Lok Ma Chau',
+        '往金鐘',
+        'to Admiralty'
       ),
 
       SIL: makeLine(
-        '南港島綫', 'South Island Line',
+        '南港島綫',
+        'South Island Line',
         'ADM|金鐘|Admiralty;OCP|海洋公園|Ocean Park;WCH|黃竹坑|Wong Chuk Hang;LET|利東|Lei Tung;SOH|海怡半島|South Horizons',
-        '往海怡半島', 'to South Horizons',
-        '往金鐘', 'to Admiralty'
+        '往海怡半島',
+        'to South Horizons',
+        '往金鐘',
+        'to Admiralty'
       ),
 
       TWL: makeLine(
-        '荃灣綫', 'Tsuen Wan Line',
+        '荃灣綫',
+        'Tsuen Wan Line',
         'CEN|中環|Central;ADM|金鐘|Admiralty;TST|尖沙咀|Tsim Sha Tsui;JOR|佐敦|Jordan;YMT|油麻地|Yau Ma Tei;MOK|旺角|Mong Kok;PRE|太子|Prince Edward;SSP|深水埗|Sham Shui Po;CSW|長沙灣|Cheung Sha Wan;LCK|荔枝角|Lai Chi Kok;MEF|美孚|Mei Foo;LAK|荔景|Lai King;KWF|葵芳|Kwai Fong;KWH|葵興|Kwai Hing;TWH|大窩口|Tai Wo Hau;TSW|荃灣|Tsuen Wan',
-        '往荃灣', 'to Tsuen Wan',
-        '往中環', 'to Central'
+        '往荃灣',
+        'to Tsuen Wan',
+        '往中環',
+        'to Central'
       ),
 
       ISL: makeLine(
-        '港島綫', 'Island Line',
+        '港島綫',
+        'Island Line',
         'KET|堅尼地城|Kennedy Town;HKU|香港大學|HKU;SYP|西營盤|Sai Ying Pun;SHW|上環|Sheung Wan;CEN|中環|Central;ADM|金鐘|Admiralty;WAC|灣仔|Wan Chai;CAB|銅鑼灣|Causeway Bay;TIH|天后|Tin Hau;FOH|炮台山|Fortress Hill;NOP|北角|North Point;QUB|鰂魚涌|Quarry Bay;TAK|太古|Tai Koo;SWH|西灣河|Sai Wan Ho;SKW|筲箕灣|Shau Kei Wan;HFC|杏花邨|Heng Fa Chuen;CHW|柴灣|Chai Wan',
-        '往柴灣', 'to Chai Wan',
-        '往堅尼地城', 'to Kennedy Town'
+        '往柴灣',
+        'to Chai Wan',
+        '往堅尼地城',
+        'to Kennedy Town'
       ),
 
       KTL: makeLine(
-        '觀塘綫', 'Kwun Tong Line',
+        '觀塘綫',
+        'Kwun Tong Line',
         'WHA|黃埔|Whampoa;HOM|何文田|Ho Man Tin;YMT|油麻地|Yau Ma Tei;MOK|旺角|Mong Kok;PRE|太子|Prince Edward;SKM|石硤尾|Shek Kip Mei;KOT|九龍塘|Kowloon Tong;LOF|樂富|Lok Fu;WTS|黃大仙|Wong Tai Sin;DIH|鑽石山|Diamond Hill;CHH|彩虹|Choi Hung;KOB|九龍灣|Kowloon Bay;NTK|牛頭角|Ngau Tau Kok;KWT|觀塘|Kwun Tong;LAT|藍田|Lam Tin;YAT|油塘|Yau Tong;TIK|調景嶺|Tiu Keng Leng',
-        '往調景嶺', 'to Tiu Keng Leng',
-        '往黃埔', 'to Whampoa'
+        '往調景嶺',
+        'to Tiu Keng Leng',
+        '往黃埔',
+        'to Whampoa'
       )
+    };
+
+    /* Display palette; colours are approximate. */
+    var lineColors = {
+      AEL: { background: '#00888A', text: '#FFFFFF' },
+      TCL: { background: '#F7943E', text: '#181818' },
+      TML: { background: '#9A3820', text: '#FFFFFF' },
+      TKL: { background: '#A35EB5', text: '#FFFFFF' },
+      EAL: { background: '#61B4E4', text: '#181818' },
+      SIL: { background: '#B5BD00', text: '#181818' },
+      TWL: { background: '#E2231A', text: '#FFFFFF' },
+      ISL: { background: '#0071CE', text: '#FFFFFF' },
+      KTL: { background: '#00AF41', text: '#181818' }
     };
 
     var presets = [
@@ -738,9 +840,24 @@
         .replace(/'/g, '&#39;');
     }
 
+    function updateLineColor(lineCode) {
+      var colors = lineColors[lineCode] || {
+        background: '#5D646A',
+        text: '#FFFFFF'
+      };
+
+      document.documentElement.style.setProperty(
+        '--bar', colors.background
+      );
+
+      document.documentElement.style.setProperty(
+        '--bar-text', colors.text
+      );
+    }
+
     /*
-     * Explicit parsing avoids browser-dependent Date(string).
-     * Timestamps without a timezone are interpreted as Hong Kong time.
+     * Parse numeric date components explicitly.
+     * A timestamp without a timezone is treated as Hong Kong time.
      */
     function parseTrainTime(value) {
       if (!value) return NaN;
@@ -766,6 +883,20 @@
         return NaN;
       }
 
+      var utc = Date.UTC(
+        year, month - 1, day, hour, minute, second
+      );
+
+      var check = new Date(utc);
+
+      if (
+        check.getUTCFullYear() !== year ||
+        check.getUTCMonth() !== month - 1 ||
+        check.getUTCDate() !== day
+      ) {
+        return NaN;
+      }
+
       var offsetMinutes = 480;
       var zone = match[7];
 
@@ -776,15 +907,15 @@
         var zoneHours = Number(cleanZone.slice(1, 3));
         var zoneMinutes = Number(cleanZone.slice(3, 5));
 
-        if (zoneHours > 23 || zoneMinutes > 59) return NaN;
+        if (zoneHours > 23 || zoneMinutes > 59) {
+          return NaN;
+        }
 
         offsetMinutes = (zoneHours * 60 + zoneMinutes) *
           (cleanZone.charAt(0) === '-' ? -1 : 1);
       }
 
-      return Date.UTC(
-        year, month - 1, day, hour, minute, second
-      ) - offsetMinutes * 60000;
+      return utc - offsetMinutes * 60000;
     }
 
     function hongKongDate(timestamp) {
@@ -793,9 +924,13 @@
 
     function formatTime(value) {
       var timestamp = parseTrainTime(value);
-      if (isNaN(timestamp)) return '--:--';
+
+      if (isNaN(timestamp)) {
+        return '--:--';
+      }
 
       var date = hongKongDate(timestamp);
+
       return pad(date.getUTCHours()) + ':' +
              pad(date.getUTCMinutes());
     }
@@ -809,11 +944,15 @@
       if (remaining < 60000) return 'Now';
 
       var minutes = Math.ceil(remaining / 60000);
-      return 'in ' + minutes + (minutes === 1 ? ' min' : ' mins');
+
+      return 'in ' + minutes +
+        (minutes === 1 ? ' min' : ' mins');
     }
 
     function updateCountdowns() {
-      var nodes = document.querySelectorAll('.eta[data-arrival]');
+      var nodes = document.querySelectorAll(
+        '.eta[data-arrival]'
+      );
 
       for (var i = 0; i < nodes.length; i++) {
         nodes[i].textContent = countdown(
@@ -824,7 +963,11 @@
 
     function updateClock() {
       var now = hongKongDate(Date.now());
-      var weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      var weekdays = [
+        'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      ];
+
       var months = [
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -846,8 +989,10 @@
 
     function addOption(select, value, label) {
       var option = document.createElement('option');
+
       option.value = value;
       option.textContent = label;
+
       select.appendChild(option);
     }
 
@@ -864,8 +1009,10 @@
 
       Object.keys(lineMap).forEach(function(code) {
         var line = lineMap[code];
+
         addOption(
-          lineEl, code,
+          lineEl,
+          code,
           code + ' — ' + line.cn + ' / ' + line.en
         );
       });
@@ -874,13 +1021,18 @@
     function buildStations(code) {
       stationEl.innerHTML = '';
 
-      Object.keys(lineMap[code].stations).forEach(function(stationCode) {
-        var station = lineMap[code].stations[stationCode];
-        addOption(
-          stationEl, stationCode,
-          stationCode + ' — ' + station.cn + ' / ' + station.en
-        );
-      });
+      Object.keys(lineMap[code].stations).forEach(
+        function(stationCode) {
+          var station = lineMap[code].stations[stationCode];
+
+          addOption(
+            stationEl,
+            stationCode,
+            stationCode + ' — ' +
+            station.cn + ' / ' + station.en
+          );
+        }
+      );
     }
 
     function emptyRow() {
@@ -897,6 +1049,7 @@
 
     function row(item, direction) {
       var timestamp = parseTrainTime(item.time);
+
       var extra = item.timetype ?
         'Type: ' + item.timetype :
         'Seq ' + (item.seq || '-');
@@ -917,7 +1070,9 @@
           '<div class="dest-en">' +
             escapeHtml(direction.en) +
           '</div>' +
-          '<div class="meta">' + escapeHtml(extra) + '</div>' +
+          '<div class="meta">' +
+            escapeHtml(extra) +
+          '</div>' +
         '</div>' +
         '<div class="time">' +
           '<div>' + formatTime(item.time) + '</div>' +
@@ -932,14 +1087,17 @@
         return;
       }
 
-      target.innerHTML = items.slice(0, 4).map(function(item) {
-        return row(item, direction);
-      }).join('');
+      target.innerHTML = items.slice(0, 4).map(
+        function(item) {
+          return row(item, direction);
+        }
+      ).join('');
     }
 
     function setStatus(text, type) {
       apiStatusEl.textContent = 'API status: ' + text;
-      apiStatusEl.className = 'pill' + (type ? ' ' + type : '');
+      apiStatusEl.className =
+        'pill' + (type ? ' ' + type : '');
     }
 
     async function fetchMtr() {
@@ -966,18 +1124,24 @@
 
         var json = await response.json();
 
-        /* Ignore an older request after changing stations. */
-        if (thisRequest !== requestNumber) return;
+        if (thisRequest !== requestNumber) {
+          return;
+        }
 
         if (Number(json.status) === 0) {
           setStatus('alert', 'warn');
           serviceStateEl.textContent = 'Service alert';
+
           serviceMsgEl.textContent =
-            json.message || 'Train information is unavailable.';
+            json.message ||
+            'Train information is unavailable.';
+
           serviceMsgEl.style.display = 'block';
+
           leftEl.innerHTML = emptyRow();
           rightEl.innerHTML = emptyRow();
           updatedEl.textContent = 'Updated --:--';
+
           return;
         }
 
@@ -987,15 +1151,24 @@
           throw new Error('No station data in API response');
         }
 
+        /*
+         * The DOM order puts rightEl FIRST.
+         * DOWN at Tsing Yi = towards Hong Kong.
+         */
         renderDirection(
-          leftEl, payload.UP || [], lineMap[line].dir.up
+          rightEl,
+          payload.DOWN || [],
+          lineMap[line].dir.down
         );
 
         renderDirection(
-          rightEl, payload.DOWN || [], lineMap[line].dir.down
+          leftEl,
+          payload.UP || [],
+          lineMap[line].dir.up
         );
 
         var delayed = json.isdelay === 'Y';
+
         setStatus(
           delayed ? 'delayed / limited data' : 'normal',
           delayed ? 'warn' : 'good'
@@ -1005,26 +1178,34 @@
           delayed ? 'Delay / limited data' : 'Service normal';
 
         var now = hongKongDate(Date.now());
+
         updatedEl.textContent =
-          'Updated ' + pad(now.getUTCHours()) + ':' +
+          'Updated ' +
+          pad(now.getUTCHours()) + ':' +
           pad(now.getUTCMinutes()) + ':' +
           pad(now.getUTCSeconds());
 
       } catch (error) {
-        if (thisRequest !== requestNumber) return;
+        if (thisRequest !== requestNumber) {
+          return;
+        }
 
         setStatus('error', 'warn');
         serviceStateEl.textContent = 'Connection error';
+
         serviceMsgEl.textContent =
-          'Unable to update train information: ' + error.message;
+          'Unable to update train information: ' +
+          error.message;
+
         serviceMsgEl.style.display = 'block';
 
-        /* Do not leave an old schedule looking current. */
         leftEl.innerHTML = emptyRow();
         rightEl.innerHTML = emptyRow();
         updatedEl.textContent = 'Updated --:--';
 
-        if (window.console) console.error(error);
+        if (window.console) {
+          console.error(error);
+        }
       }
     }
 
@@ -1040,18 +1221,22 @@
         }
 
         var data = await response.json();
+
         var temperature =
-          data.temperature && data.temperature.data &&
+          data.temperature &&
+          data.temperature.data &&
           data.temperature.data[0] ?
           data.temperature.data[0].value : '--';
 
         var humidity =
-          data.humidity && data.humidity.data &&
+          data.humidity &&
+          data.humidity.data &&
           data.humidity.data[0] ?
           data.humidity.data[0].value : '--';
 
         el('weather').textContent =
-          'Weather: ' + temperature + '°C / RH ' + humidity + '%';
+          'Weather: ' + temperature +
+          '°C / RH ' + humidity + '%';
 
       } catch (error) {
         el('weather').textContent = 'Weather: unavailable';
@@ -1059,12 +1244,18 @@
     }
 
     function applySelection(line, station) {
-      if (!lineMap[line] || !lineMap[line].stations[station]) return;
+      if (
+        !lineMap[line] ||
+        !lineMap[line].stations[station]
+      ) {
+        return;
+      }
 
       activeLine = line;
       activeStation = station;
 
       lineEl.value = line;
+
       buildStations(line);
       stationEl.value = station;
 
@@ -1075,6 +1266,23 @@
       el('lineEn').textContent = lineData.en;
       el('stationCn').textContent = stationData.cn;
       el('stationEn').textContent = stationData.en;
+
+      updateLineColor(line);
+
+      /* Keep the preset menu consistent with the selection. */
+      var presetIndex = -1;
+
+      for (var i = 0; i < presets.length; i++) {
+        if (
+          presets[i].line === line &&
+          presets[i].sta === station
+        ) {
+          presetIndex = i;
+          break;
+        }
+      }
+
+      presetEl.selectedIndex = presetIndex;
 
       leftEl.innerHTML = emptyRow();
       rightEl.innerHTML = emptyRow();
@@ -1090,7 +1298,8 @@
 
     function syncFullscreenButton() {
       fullscreenBtn.textContent =
-        fullscreenElement() ? 'Exit full screen' : 'Fit to screen';
+        fullscreenElement() ?
+        'Exit full screen' : 'Fit to screen';
     }
 
     async function toggleFullscreen() {
@@ -1117,7 +1326,10 @@
           }
         }
       } catch (error) {
-        alert('Unable to change fullscreen mode: ' + error.message);
+        alert(
+          'Unable to change fullscreen mode: ' +
+          error.message
+        );
       }
 
       syncFullscreenButton();
@@ -1153,7 +1365,10 @@
         wakeLock = lock;
 
         lock.addEventListener('release', function() {
-          if (wakeLock === lock) wakeLock = null;
+          if (wakeLock === lock) {
+            wakeLock = null;
+          }
+
           syncButtons();
         });
 
@@ -1175,9 +1390,11 @@
         !navigator.wakeLock.request
       ) {
         alert(
-          'Automatic screen wake lock is unavailable in this browser. ' +
-          'You can instead adjust the device Auto-Lock setting.'
+          'Automatic screen wake lock is unavailable ' +
+          'in this browser. You can instead adjust ' +
+          'the device Auto-Lock setting.'
         );
+
         return;
       }
 
@@ -1199,24 +1416,34 @@
       syncButtons();
     });
 
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-    document.addEventListener(
-      'fullscreenchange', syncFullscreenButton
+    fullscreenBtn.addEventListener(
+      'click',
+      toggleFullscreen
     );
 
     document.addEventListener(
-      'webkitfullscreenchange', syncFullscreenButton
+      'fullscreenchange',
+      syncFullscreenButton
     );
 
-    document.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'visible') {
-        updateClock();
-        fetchMtr();
+    document.addEventListener(
+      'webkitfullscreenchange',
+      syncFullscreenButton
+    );
 
-        if (wakeWanted) acquireWakeLock();
+    document.addEventListener(
+      'visibilitychange',
+      function() {
+        if (document.visibilityState === 'visible') {
+          updateClock();
+          fetchMtr();
+
+          if (wakeWanted) {
+            acquireWakeLock();
+          }
+        }
       }
-    });
+    );
 
     presetEl.addEventListener('change', function() {
       var preset = presets[Number(presetEl.value)];
@@ -1242,7 +1469,7 @@
     buildPresets();
     buildLines();
 
-    /* Default: Tung Chung Line, Tsing Yi station. */
+    /* Always start at Tsing Yi on the Tung Chung Line. */
     applySelection('TCL', 'TSY');
 
     fetchWeather();
