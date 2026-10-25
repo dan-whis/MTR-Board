@@ -6,7 +6,8 @@
         content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>MTR Next Trains — Status Links</title>
+
+  <title>MTR Next Trains — Presets, No Links</title>
 
   <style>
     :root {
@@ -22,10 +23,18 @@
       --footer: #ecece6;
     }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html { background: var(--bg); }
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--bg);
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont,
@@ -53,8 +62,13 @@
       margin: -5px -5px 7px;
     }
 
-    .top-actions button { margin: 5px; }
-    .toggle-btn { min-width: 132px; }
+    .top-actions button {
+      margin: 5px;
+    }
+
+    .toggle-btn {
+      min-width: 132px;
+    }
 
     .controls {
       display: grid;
@@ -96,6 +110,11 @@
       font-weight: 700;
     }
 
+    button:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
     .primary {
       background: #1f2c36;
       color: white;
@@ -106,7 +125,7 @@
       border: 10px solid var(--frame);
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 10px 28px rgba(0,0,0,.08);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .08);
     }
 
     .hero {
@@ -163,33 +182,33 @@
       height: 34px;
       margin: 0 16px;
       border-radius: 999px;
-      border: 3px solid rgba(0,0,0,.28);
+      border: 3px solid rgba(0, 0, 0, .28);
       flex: 0 0 auto;
       background: #93999f;
       box-shadow:
-        inset 0 2px 5px rgba(255,255,255,.45),
-        inset 0 -2px 5px rgba(0,0,0,.2);
+        inset 0 2px 5px rgba(255, 255, 255, .45),
+        inset 0 -2px 5px rgba(0, 0, 0, .2);
     }
 
     .linebar-center.status-normal {
       background: #22c55e;
       box-shadow:
-        0 0 10px rgba(34,197,94,.55),
-        inset 0 2px 5px rgba(255,255,255,.55);
+        0 0 10px rgba(34, 197, 94, .55),
+        inset 0 2px 5px rgba(255, 255, 255, .55);
     }
 
     .linebar-center.status-delayed {
       background: #fbbf24;
       box-shadow:
-        0 0 10px rgba(251,191,36,.55),
-        inset 0 2px 5px rgba(255,255,255,.55);
+        0 0 10px rgba(251, 191, 36, .55),
+        inset 0 2px 5px rgba(255, 255, 255, .55);
     }
 
     .linebar-center.status-alert {
       background: #ef4444;
       box-shadow:
-        0 0 10px rgba(239,68,68,.55),
-        inset 0 2px 5px rgba(255,255,255,.55);
+        0 0 10px rgba(239, 68, 68, .55),
+        inset 0 2px 5px rgba(255, 255, 255, .55);
     }
 
     .linebar-center.status-unknown {
@@ -228,41 +247,22 @@
       color: #7b2929;
     }
 
-    .status-link {
-      color: inherit;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      cursor: pointer;
-    }
-
-    a.pill { text-decoration: none; }
-
-    a.pill::after {
-      content: " ↗";
-      margin-left: 6px;
-    }
-
-    .status-link:focus {
-      outline: 2px solid currentColor;
-      outline-offset: 3px;
-    }
-
-    .service-links { line-height: 1.6; }
-
     /*
      * DOWN is first in the HTML:
      * towards Hong Kong at Tsing Yi.
      */
     .grid {
       display: grid;
-      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
-    .col { padding: 14px 22px 22px; }
+    .col {
+      padding: 14px 22px 22px;
+    }
 
     .train {
       display: grid;
-      grid-template-columns: 56px minmax(0,1fr) auto;
+      grid-template-columns: 56px minmax(0, 1fr) auto;
       grid-gap: 12px;
       align-items: center;
       padding: 14px 0;
@@ -342,8 +342,6 @@
       display: none;
     }
 
-    .service-msg p { margin: 0 0 8px; }
-
     .controls > *,
     .statusbar > *,
     .panel-footer > *,
@@ -353,7 +351,7 @@
 
     @media (max-width: 900px) {
       .controls {
-        grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       }
 
       .grid {
@@ -361,7 +359,9 @@
         flex-direction: column;
       }
 
-      .grid > .col { width: 100%; }
+      .grid > .col {
+        width: 100%;
+      }
 
       .col-up {
         border-top: 1px solid var(--line);
@@ -381,24 +381,33 @@
 
       .panel-footer,
       .statusbar {
-        grid-template-columns: minmax(0,1fr);
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .toggle-btn { flex: 1 1 auto; }
+      .toggle-btn {
+        flex: 1 1 auto;
+      }
     }
 
     @media (max-width: 600px) {
-      body { padding: 8px; }
-      .app { width: 100%; }
+      body {
+        padding: 8px;
+      }
+
+      .app {
+        width: 100%;
+      }
 
       .top-actions {
         display: grid;
-        grid-template-columns: repeat(2,minmax(0,1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-gap: 8px;
         margin: 0 0 10px;
       }
 
-      .top-actions button { margin: 0; }
+      .top-actions button {
+        margin: 0;
+      }
 
       .toggle-btn {
         min-width: 0;
@@ -407,10 +416,12 @@
         font-size: 13px;
       }
 
-      #toggleFullscreen { grid-column: 1 / -1; }
+      #toggleFullscreen {
+        grid-column: 1 / -1;
+      }
 
       .controls {
-        grid-template-columns: repeat(2,minmax(0,1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-gap: 8px;
         margin-bottom: 10px;
       }
@@ -419,8 +430,14 @@
         grid-column: 1 / -1;
       }
 
-      label { font-size: 12px; }
-      select { font-size: 16px; padding: 0 8px; }
+      label {
+        font-size: 12px;
+      }
+
+      select {
+        font-size: 16px;
+        padding: 0 8px;
+      }
 
       .controls button {
         width: 100%;
@@ -440,8 +457,15 @@
         padding: 16px 12px 14px;
       }
 
-      .station-cn { order: 1; font-size: 34px; }
-      .station-en { order: 2; font-size: 20px; }
+      .station-cn {
+        order: 1;
+        font-size: 34px;
+      }
+
+      .station-en {
+        order: 2;
+        font-size: 20px;
+      }
 
       .clock {
         order: 3;
@@ -476,11 +500,16 @@
         white-space: normal;
       }
 
-      .col { padding: 4px 12px 12px; }
-      .col-up { padding-top: 10px; }
+      .col {
+        padding: 4px 12px 12px;
+      }
+
+      .col-up {
+        padding-top: 10px;
+      }
 
       .train {
-        grid-template-columns: 40px minmax(0,1fr) auto;
+        grid-template-columns: 40px minmax(0, 1fr) auto;
         grid-gap: 8px;
         padding: 12px 0;
       }
@@ -503,8 +532,14 @@
         overflow-wrap: break-word;
       }
 
-      .meta { font-size: 11px; }
-      .time { font-size: 28px; line-height: 1.1; }
+      .meta {
+        font-size: 11px;
+      }
+
+      .time {
+        font-size: 28px;
+        line-height: 1.1;
+      }
 
       .panel-footer {
         grid-gap: 5px;
@@ -519,10 +554,13 @@
     }
 
     @media (max-width: 360px) {
-      .col { padding-left: 8px; padding-right: 8px; }
+      .col {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
 
       .train {
-        grid-template-columns: 34px minmax(0,1fr) auto;
+        grid-template-columns: 34px minmax(0, 1fr) auto;
         grid-gap: 6px;
       }
 
@@ -545,9 +583,19 @@
       <button id="toggleTheme" class="toggle-btn primary">
         Gray / night mode
       </button>
+
       <button id="toggleWake" class="toggle-btn">
         Always on: Off
       </button>
+
+      <button id="addPreset" class="toggle-btn">
+        Add preset
+      </button>
+
+      <button id="removePreset" class="toggle-btn">
+        Remove preset
+      </button>
+
       <button id="toggleFullscreen" class="toggle-btn">
         Fit to screen
       </button>
@@ -558,14 +606,17 @@
         <label for="preset">Quick preset</label>
         <select id="preset"></select>
       </div>
+
       <div class="field">
         <label for="line">Line code</label>
         <select id="line"></select>
       </div>
+
       <div class="field">
         <label for="station">Station code</label>
         <select id="station"></select>
       </div>
+
       <button id="apply" class="primary">Apply</button>
       <button id="reloadNow">Reload now</button>
     </div>
@@ -576,6 +627,7 @@
           <div class="clock-time" id="clockTime">--:--:--</div>
           <div class="clock-date" id="clockDate">----</div>
         </div>
+
         <div class="station-cn" id="stationCn">青衣</div>
         <div class="station-en" id="stationEn">Tsing Yi</div>
       </div>
@@ -595,16 +647,13 @@
       </div>
 
       <div class="statusbar">
-        <a
-          class="pill status-link"
-          id="apiStatus"
-          href="https://www.mtr.com.hk/en/customer/main/service_status.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="View official MTR service status"
-        >API status: loading</a>
+        <div class="pill" id="apiStatus">
+          API status: loading
+        </div>
 
-        <div class="pill" id="weather">Weather: --</div>
+        <div class="pill" id="weather">
+          Weather: --
+        </div>
 
         <div class="pill">
           Auto refresh: 15s / full reload: 30m
@@ -616,6 +665,7 @@
         <div class="col col-down">
           <div id="right"></div>
         </div>
+
         <div class="col col-up">
           <div id="left"></div>
         </div>
@@ -623,53 +673,29 @@
 
       <div class="panel-footer">
         <div>MTR Next Trains</div>
-
-        <div class="service-links">
-          <a
-            id="serviceState"
-            class="status-link"
-            href="https://www.mtr.com.hk/en/customer/main/service_status.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="View official MTR service status"
-          >Loading</a>
-
-          <span aria-hidden="true"> · </span>
-
-          <a
-            class="status-link"
-            href="https://link.mtrmb.mtr.com.hk/moblink/?train_service_status"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open MTR service status in the app or browser"
-          >MTR Mobile ↗</a>
-        </div>
-
+        <div id="serviceState">Loading</div>
         <div id="updated">Updated --:--</div>
       </div>
     </div>
 
-    <div class="service-msg" id="serviceMsg">
-      <p id="serviceMsgText"></p>
-      <a
-        class="status-link"
-        href="https://www.mtr.com.hk/en/customer/main/service_status.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >Check official MTR updates ↗</a>
-    </div>
+    <div class="service-msg" id="serviceMsg"></div>
   </div>
 
   <script>
     /*
-     * Station data: CODE|Chinese name|English name
+     * Station data:
+     * CODE|Chinese name|English name
      */
     function makeLine(cn, en, text, upCn, upEn, downCn, downEn) {
       var stations = {};
 
       text.split(';').forEach(function(entry) {
         var parts = entry.split('|');
-        stations[parts[0]] = { cn: parts[1], en: parts[2] };
+
+        stations[parts[0]] = {
+          cn: parts[1],
+          en: parts[2]
+        };
       });
 
       return {
@@ -677,8 +703,14 @@
         en: en,
         stations: stations,
         dir: {
-          up: { cn: upCn, en: upEn },
-          down: { cn: downCn, en: downEn }
+          up: {
+            cn: upCn,
+            en: upEn
+          },
+          down: {
+            cn: downCn,
+            en: downEn
+          }
         }
       };
     }
@@ -761,14 +793,120 @@
       KTL: { background: '#00AF41', text: '#181818' }
     };
 
-    var presets = [
-      { name: '東涌綫｜青衣 Tsing Yi', line: 'TCL', sta: 'TSY' },
-      { name: '東涌綫｜荔景 Lai King', line: 'TCL', sta: 'LAK' },
-      { name: '東涌綫｜香港 Hong Kong', line: 'TCL', sta: 'HOK' },
-      { name: '機場快綫｜九龍 Kowloon', line: 'AEL', sta: 'KOW' },
-      { name: '荃灣綫｜金鐘 Admiralty', line: 'TWL', sta: 'ADM' },
-      { name: '東鐵綫｜金鐘 Admiralty', line: 'EAL', sta: 'ADM' }
-    ];
+    var PRESET_STORAGE_KEY = 'mtr-board-presets-v1';
+    var DEFAULT_LINE = 'TCL';
+    var DEFAULT_STATION = 'TSY';
+
+    function defaultPreset() {
+      return {
+        name: '東涌綫｜青衣 Tsing Yi',
+        line: DEFAULT_LINE,
+        sta: DEFAULT_STATION
+      };
+    }
+
+    function presetName(line, station) {
+      var lineData = lineMap[line];
+      var stationData = lineData.stations[station];
+
+      return lineData.cn + '｜' +
+        stationData.cn + ' ' + stationData.en;
+    }
+
+    function validPreset(preset) {
+      return !!(
+        preset &&
+        typeof preset.line === 'string' &&
+        typeof preset.sta === 'string' &&
+        Object.prototype.hasOwnProperty.call(
+          lineMap, preset.line
+        ) &&
+        Object.prototype.hasOwnProperty.call(
+          lineMap[preset.line].stations,
+          preset.sta
+        )
+      );
+    }
+
+    function loadPresets() {
+      var result = [defaultPreset()];
+      var seen = {};
+
+      seen[DEFAULT_LINE + '-' + DEFAULT_STATION] = true;
+
+      try {
+        var stored = window.localStorage.getItem(
+          PRESET_STORAGE_KEY
+        );
+
+        /*
+         * Keep the previous quick presets on the first visit.
+         * Subsequent visits use the saved list.
+         */
+        var saved = stored === null ? [
+          { line: 'TCL', sta: 'LAK' },
+          { line: 'TCL', sta: 'HOK' },
+          { line: 'AEL', sta: 'KOW' },
+          { line: 'TWL', sta: 'ADM' },
+          { line: 'EAL', sta: 'ADM' }
+        ] : JSON.parse(stored);
+
+        if (!Array.isArray(saved)) {
+          return result;
+        }
+
+        saved.forEach(function(preset) {
+          if (!validPreset(preset)) return;
+
+          var key = preset.line + '-' + preset.sta;
+
+          if (seen[key]) return;
+
+          seen[key] = true;
+
+          result.push({
+            name: presetName(preset.line, preset.sta),
+            line: preset.line,
+            sta: preset.sta
+          });
+        });
+
+      } catch (error) {
+        /*
+         * The protected default still works if storage fails.
+         */
+      }
+
+      return result;
+    }
+
+    function savePresetList(list) {
+      try {
+        var saved = list.slice(1).map(function(preset) {
+          return {
+            line: preset.line,
+            sta: preset.sta
+          };
+        });
+
+        window.localStorage.setItem(
+          PRESET_STORAGE_KEY,
+          JSON.stringify(saved)
+        );
+
+        return true;
+
+      } catch (error) {
+        alert(
+          'Unable to save presets in this browser. ' +
+          'Your saved preset list has not been changed.'
+        );
+
+        return false;
+      }
+    }
+
+    var presets = loadPresets();
 
     function el(id) {
       return document.getElementById(id);
@@ -787,8 +925,8 @@
     var wakeBtn = el('toggleWake');
     var fullscreenBtn = el('toggleFullscreen');
 
-    var activeLine = 'TCL';
-    var activeStation = 'TSY';
+    var activeLine = DEFAULT_LINE;
+    var activeStation = DEFAULT_STATION;
     var requestNumber = 0;
     var wakeLock = null;
     var wakeWanted = false;
@@ -823,8 +961,8 @@
     }
 
     /*
-     * Parse explicitly instead of using Date(string).
-     * A timestamp with no timezone is interpreted as Hong Kong time.
+     * Explicit timestamp parsing.
+     * Timestamps without a timezone are treated as Hong Kong time.
      */
     function parseTrainTime(value) {
       if (!value) return NaN;
@@ -874,7 +1012,9 @@
         var zoneHours = Number(cleanZone.slice(1, 3));
         var zoneMinutes = Number(cleanZone.slice(3, 5));
 
-        if (zoneHours > 23 || zoneMinutes > 59) return NaN;
+        if (zoneHours > 23 || zoneMinutes > 59) {
+          return NaN;
+        }
 
         offsetMinutes = (zoneHours * 60 + zoneMinutes) *
           (cleanZone.charAt(0) === '-' ? -1 : 1);
@@ -889,7 +1029,10 @@
 
     function formatTime(value) {
       var timestamp = parseTrainTime(value);
-      if (isNaN(timestamp)) return '--:--';
+
+      if (isNaN(timestamp)) {
+        return '--:--';
+      }
 
       var date = hongKongDate(timestamp);
 
@@ -912,7 +1055,9 @@
     }
 
     function updateCountdowns() {
-      var nodes = document.querySelectorAll('.eta[data-arrival]');
+      var nodes = document.querySelectorAll(
+        '.eta[data-arrival]'
+      );
 
       for (var i = 0; i < nodes.length; i++) {
         nodes[i].textContent = countdown(
@@ -923,7 +1068,11 @@
 
     function updateClock() {
       var now = hongKongDate(Date.now());
-      var weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      var weekdays = [
+        'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      ];
+
       var months = [
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -945,17 +1094,123 @@
 
     function addOption(select, value, label) {
       var option = document.createElement('option');
+
       option.value = value;
       option.textContent = label;
+
       select.appendChild(option);
+    }
+
+    function findPresetIndex(line, station) {
+      for (var i = 0; i < presets.length; i++) {
+        if (
+          presets[i].line === line &&
+          presets[i].sta === station
+        ) {
+          return i;
+        }
+      }
+
+      return -1;
+    }
+
+    function syncPresetButtons() {
+      var index = findPresetIndex(
+        activeLine, activeStation
+      );
+
+      presetEl.selectedIndex = index;
+
+      el('addPreset').disabled = index !== -1;
+
+      el('addPreset').textContent =
+        index !== -1 ? 'Preset saved' : 'Add preset';
+
+      /*
+       * Index 0 is the protected Tsing Yi preset.
+       */
+      el('removePreset').disabled = index <= 0;
     }
 
     function buildPresets() {
       presetEl.innerHTML = '';
 
       presets.forEach(function(preset, index) {
-        addOption(presetEl, index, preset.name);
+        var label = preset.name;
+
+        if (index === 0) {
+          label += ' — Default';
+        }
+
+        addOption(presetEl, index, label);
       });
+
+      syncPresetButtons();
+    }
+
+    function addCurrentPreset() {
+      if (!validPreset({
+        line: activeLine,
+        sta: activeStation
+      })) {
+        return;
+      }
+
+      if (
+        findPresetIndex(activeLine, activeStation) !== -1
+      ) {
+        syncPresetButtons();
+        return;
+      }
+
+      var updated = presets.slice();
+
+      updated.push({
+        name: presetName(activeLine, activeStation),
+        line: activeLine,
+        sta: activeStation
+      });
+
+      if (!savePresetList(updated)) {
+        return;
+      }
+
+      presets = updated;
+      buildPresets();
+    }
+
+    function removeCurrentPreset() {
+      var index = findPresetIndex(
+        activeLine, activeStation
+      );
+
+      if (index <= 0) {
+        syncPresetButtons();
+        return;
+      }
+
+      var preset = presets[index];
+
+      if (!window.confirm(
+        'Remove this quick preset?\n' + preset.name
+      )) {
+        return;
+      }
+
+      var updated = presets.slice();
+      updated.splice(index, 1);
+
+      if (!savePresetList(updated)) {
+        return;
+      }
+
+      presets = updated;
+      buildPresets();
+
+      /*
+       * Keep displaying the current station.
+       * Removing a preset only removes its shortcut.
+       */
     }
 
     function buildLines() {
@@ -965,7 +1220,8 @@
         var line = lineMap[code];
 
         addOption(
-          lineEl, code,
+          lineEl,
+          code,
           code + ' — ' + line.cn + ' / ' + line.en
         );
       });
@@ -974,14 +1230,19 @@
     function buildStations(code) {
       stationEl.innerHTML = '';
 
-      Object.keys(lineMap[code].stations).forEach(function(stationCode) {
-        var station = lineMap[code].stations[stationCode];
+      Object.keys(lineMap[code].stations).forEach(
+        function(stationCode) {
+          var station =
+            lineMap[code].stations[stationCode];
 
-        addOption(
-          stationEl, stationCode,
-          stationCode + ' — ' + station.cn + ' / ' + station.en
-        );
-      });
+          addOption(
+            stationEl,
+            stationCode,
+            stationCode + ' — ' +
+            station.cn + ' / ' + station.en
+          );
+        }
+      );
     }
 
     function emptyRow() {
@@ -1004,7 +1265,8 @@
         'Seq ' + (item.seq || '-');
 
       var eta = isNaN(timestamp) ? '' :
-        '<div class="eta" data-arrival="' + timestamp + '">' +
+        '<div class="eta" data-arrival="' +
+        timestamp + '">' +
           escapeHtml(countdown(timestamp)) +
         '</div>';
 
@@ -1019,7 +1281,9 @@
           '<div class="dest-en">' +
             escapeHtml(direction.en) +
           '</div>' +
-          '<div class="meta">' + escapeHtml(extra) + '</div>' +
+          '<div class="meta">' +
+            escapeHtml(extra) +
+          '</div>' +
         '</div>' +
         '<div class="time">' +
           '<div>' + formatTime(item.time) + '</div>' +
@@ -1034,9 +1298,11 @@
         return;
       }
 
-      target.innerHTML = items.slice(0, 4).map(function(item) {
-        return row(item, direction);
-      }).join('');
+      target.innerHTML = items.slice(0, 4).map(
+        function(item) {
+          return row(item, direction);
+        }
+      ).join('');
     }
 
     function updateServiceLight(state, message) {
@@ -1049,9 +1315,13 @@
         unknown: true
       };
 
-      if (!allowed[state]) state = 'unknown';
+      if (!allowed[state]) {
+        state = 'unknown';
+      }
 
-      light.className = 'linebar-center status-' + state;
+      light.className =
+        'linebar-center status-' + state;
+
       light.setAttribute('aria-label', message);
       light.setAttribute('title', message);
     }
@@ -1060,7 +1330,7 @@
       apiStatusEl.textContent = 'API status: ' + text;
 
       apiStatusEl.className =
-        'pill status-link' + (type ? ' ' + type : '');
+        'pill' + (type ? ' ' + type : '');
 
       switch (text) {
         case 'normal':
@@ -1080,7 +1350,7 @@
         case 'alert':
           updateServiceLight(
             'alert',
-            'API error or service alert — check official updates'
+            'API error or service alert'
           );
           break;
 
@@ -1107,10 +1377,7 @@
     }
 
     function showServiceMessage(message) {
-      /*
-       * Update only the paragraph so the official-update link survives.
-       */
-      el('serviceMsgText').textContent = message;
+      serviceMsgEl.textContent = message;
       serviceMsgEl.style.display = 'block';
     }
 
@@ -1138,35 +1405,48 @@
 
         var json = await response.json();
 
-        if (thisRequest !== requestNumber) return;
+        if (thisRequest !== requestNumber) {
+          return;
+        }
 
         if (Number(json.status) === 0) {
           setStatus('alert', 'warn');
           serviceStateEl.textContent = 'API error / alert';
 
           showServiceMessage(
-            json.message || 'Train information is unavailable.'
+            json.message ||
+            'Train information is unavailable.'
           );
 
           leftEl.innerHTML = emptyRow();
           rightEl.innerHTML = emptyRow();
           updatedEl.textContent = 'Updated --:--';
+
           return;
         }
 
         var payload = json.data && json.data[key];
 
         if (!payload) {
-          throw new Error('No station data in API response');
+          throw new Error(
+            'No station data in API response'
+          );
         }
 
-        /* DOWN: Hong Kong-bound at Tsing Yi; first in the DOM. */
+        /*
+         * DOWN is towards Hong Kong at Tsing Yi.
+         * Its container is first in the HTML.
+         */
         renderDirection(
-          rightEl, payload.DOWN || [], lineMap[line].dir.down
+          rightEl,
+          payload.DOWN || [],
+          lineMap[line].dir.down
         );
 
         renderDirection(
-          leftEl, payload.UP || [], lineMap[line].dir.up
+          leftEl,
+          payload.UP || [],
+          lineMap[line].dir.up
         );
 
         if (json.isdelay === 'Y') {
@@ -1174,8 +1454,7 @@
           serviceStateEl.textContent = 'Delay reported';
 
           showServiceMessage(
-            'The Next Train API reports a delay. ' +
-            'Check official MTR updates for details.'
+            'The Next Train API reports a delay.'
           );
 
         } else if (json.isdelay === 'N') {
@@ -1184,7 +1463,8 @@
 
         } else {
           setStatus('unknown', '');
-          serviceStateEl.textContent = 'Service status unknown';
+          serviceStateEl.textContent =
+            'Service status unknown';
         }
 
         var now = hongKongDate(Date.now());
@@ -1196,7 +1476,9 @@
           pad(now.getUTCSeconds());
 
       } catch (error) {
-        if (thisRequest !== requestNumber) return;
+        if (thisRequest !== requestNumber) {
+          return;
+        }
 
         setStatus('error', 'warn');
         serviceStateEl.textContent = 'Connection error';
@@ -1211,7 +1493,9 @@
         rightEl.innerHTML = emptyRow();
         updatedEl.textContent = 'Updated --:--';
 
-        if (window.console) console.error(error);
+        if (window.console) {
+          console.error(error);
+        }
       }
     }
 
@@ -1229,25 +1513,32 @@
         var data = await response.json();
 
         var temperature =
-          data.temperature && data.temperature.data &&
+          data.temperature &&
+          data.temperature.data &&
           data.temperature.data[0] ?
           data.temperature.data[0].value : '--';
 
         var humidity =
-          data.humidity && data.humidity.data &&
+          data.humidity &&
+          data.humidity.data &&
           data.humidity.data[0] ?
           data.humidity.data[0].value : '--';
 
         el('weather').textContent =
-          'Weather: ' + temperature + '°C / RH ' + humidity + '%';
+          'Weather: ' + temperature +
+          '°C / RH ' + humidity + '%';
 
       } catch (error) {
-        el('weather').textContent = 'Weather: unavailable';
+        el('weather').textContent =
+          'Weather: unavailable';
       }
     }
 
     function applySelection(line, station) {
-      if (!lineMap[line] || !lineMap[line].stations[station]) {
+      if (
+        !lineMap[line] ||
+        !lineMap[line].stations[station]
+      ) {
         return;
       }
 
@@ -1255,6 +1546,7 @@
       activeStation = station;
 
       lineEl.value = line;
+
       buildStations(line);
       stationEl.value = station;
 
@@ -1267,23 +1559,11 @@
       el('stationEn').textContent = stationData.en;
 
       updateLineColor(line);
-
-      var presetIndex = -1;
-
-      for (var i = 0; i < presets.length; i++) {
-        if (
-          presets[i].line === line &&
-          presets[i].sta === station
-        ) {
-          presetIndex = i;
-          break;
-        }
-      }
-
-      presetEl.selectedIndex = presetIndex;
+      syncPresetButtons();
 
       leftEl.innerHTML = emptyRow();
       rightEl.innerHTML = emptyRow();
+
       updatedEl.textContent = 'Updated --:--';
       serviceStateEl.textContent = 'Checking status';
 
@@ -1298,7 +1578,8 @@
 
     function syncFullscreenButton() {
       fullscreenBtn.textContent =
-        fullscreenElement() ? 'Exit full screen' : 'Fit to screen';
+        fullscreenElement() ?
+        'Exit full screen' : 'Fit to screen';
     }
 
     async function toggleFullscreen() {
@@ -1325,7 +1606,10 @@
           }
         }
       } catch (error) {
-        alert('Unable to change fullscreen mode: ' + error.message);
+        alert(
+          'Unable to change fullscreen mode: ' +
+          error.message
+        );
       }
 
       syncFullscreenButton();
@@ -1354,7 +1638,9 @@
       wakePending = true;
 
       try {
-        var lock = await navigator.wakeLock.request('screen');
+        var lock = await navigator.wakeLock.request(
+          'screen'
+        );
 
         if (!wakeWanted) {
           await lock.release();
@@ -1362,7 +1648,10 @@
           wakeLock = lock;
 
           lock.addEventListener('release', function() {
-            if (wakeLock === lock) wakeLock = null;
+            if (wakeLock === lock) {
+              wakeLock = null;
+            }
+
             syncButtons();
           });
         }
@@ -1381,11 +1670,16 @@
     });
 
     wakeBtn.addEventListener('click', async function() {
-      if (!navigator.wakeLock || !navigator.wakeLock.request) {
+      if (
+        !navigator.wakeLock ||
+        !navigator.wakeLock.request
+      ) {
         alert(
-          'Automatic screen wake lock is unavailable in this browser. ' +
-          'You can instead adjust the device Auto-Lock setting.'
+          'Automatic screen wake lock is unavailable ' +
+          'in this browser. You can instead adjust ' +
+          'the device Auto-Lock setting.'
         );
+
         return;
       }
 
@@ -1407,26 +1701,50 @@
       syncButtons();
     });
 
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener(
+      'click',
+      toggleFullscreen
+    );
 
-    document.addEventListener(
-      'fullscreenchange', syncFullscreenButton
+    el('addPreset').addEventListener(
+      'click',
+      addCurrentPreset
+    );
+
+    el('removePreset').addEventListener(
+      'click',
+      removeCurrentPreset
     );
 
     document.addEventListener(
-      'webkitfullscreenchange', syncFullscreenButton
+      'fullscreenchange',
+      syncFullscreenButton
     );
 
-    document.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'visible') {
-        updateClock();
-        fetchMtr();
+    document.addEventListener(
+      'webkitfullscreenchange',
+      syncFullscreenButton
+    );
 
-        if (wakeWanted) acquireWakeLock();
+    document.addEventListener(
+      'visibilitychange',
+      function() {
+        if (document.visibilityState === 'visible') {
+          updateClock();
+          fetchMtr();
+
+          if (wakeWanted) {
+            acquireWakeLock();
+          }
+        }
       }
-    });
+    );
 
     presetEl.addEventListener('change', function() {
+      if (presetEl.selectedIndex < 0) {
+        return;
+      }
+
       var preset = presets[Number(presetEl.value)];
 
       if (preset) {
@@ -1450,8 +1768,11 @@
     buildPresets();
     buildLines();
 
-    /* Default: Tsing Yi, Tung Chung Line. */
-    applySelection('TCL', 'TSY');
+    /*
+     * Always start at Tsing Yi on the Tung Chung Line.
+     * Custom presets do not change the startup default.
+     */
+    applySelection(DEFAULT_LINE, DEFAULT_STATION);
 
     fetchWeather();
     updateClock();
