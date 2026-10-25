@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="light">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mtr-board-enhanced</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>MTR Next Trains</title>
+
   <style>
     :root {
       --bg: #efeee8;
@@ -16,39 +20,68 @@
       --bar-text: #f8f8f6;
       --chip: #767d83;
       --footer: #ecece6;
-      --alert: #8b2d2d;
-      --good: #2e6f44;
     }
+
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
+
+    html {
+      background: var(--bg);
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       padding: 16px;
+      -webkit-text-size-adjust: 100%;
     }
+
+    body.grayscale {
+      filter: grayscale(1) contrast(1.04);
+    }
+
     .app {
       max-width: 1180px;
       margin: 0 auto;
     }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin: -5px -5px 7px;
+    }
+
+    .top-actions button {
+      margin: 5px;
+    }
+
+    .toggle-btn {
+      min-width: 132px;
+    }
+
     .controls {
       display: grid;
       grid-template-columns: 1.2fr 1fr 1fr auto auto;
-      gap: 10px;
+      grid-gap: 10px;
       margin-bottom: 14px;
       align-items: end;
     }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
     }
+
     label {
       font-size: 13px;
       color: var(--muted);
       font-weight: 600;
     }
+
     select, button {
       height: 44px;
       border-radius: 10px;
@@ -56,12 +89,25 @@
       padding: 0 12px;
       font-size: 16px;
       background: white;
+      color: #181818;
     }
+
+    select {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+
     button {
       cursor: pointer;
       font-weight: 700;
     }
-    .primary { background: #1f2c36; color: white; }
+
+    .primary {
+      background: #1f2c36;
+      color: white;
+    }
+
     .board {
       background: var(--panel);
       border: 10px solid var(--frame);
@@ -69,14 +115,27 @@
       overflow: hidden;
       box-shadow: 0 10px 28px rgba(0,0,0,.08);
     }
+
     .hero {
       position: relative;
       padding: 24px 28px 12px;
       text-align: center;
-      background: linear-gradient(to bottom, #f8f8f4 0%, #f4f4ef 100%);
+      background: linear-gradient(
+        to bottom, #f8f8f4 0%, #f4f4ef 100%
+      );
     }
-    .station-cn { font-size: 42px; font-weight: 800; letter-spacing: .03em; }
-    .station-en { font-size: 24px; margin-top: 2px; }
+
+    .station-cn {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+
+    .station-en {
+      font-size: 24px;
+      margin-top: 2px;
+    }
+
     .clock {
       position: absolute;
       right: 22px;
@@ -84,41 +143,52 @@
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .clock-time { font-size: 24px; font-weight: 800; }
-    .clock-date { font-size: 13px; color: var(--muted); }
+
+    .clock-time {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .clock-date {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     .linebar {
       background: var(--bar);
       color: var(--bar-text);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
       padding: 10px 20px;
       font-size: 19px;
       font-weight: 600;
     }
+
     .linebar-center {
       width: 34px;
       height: 34px;
+      margin: 0 16px;
       border-radius: 999px;
       border: 3px solid #52595e;
       background: #f4f4ef;
       flex: 0 0 auto;
     }
+
     .statusbar {
       display: grid;
       grid-template-columns: 1fr auto auto;
-      gap: 8px;
+      grid-gap: 8px;
       align-items: center;
       padding: 10px 16px;
       background: #f3f2ec;
       border-bottom: 1px solid var(--line);
       font-size: 14px;
     }
+
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
       padding: 6px 10px;
       border-radius: 999px;
       background: #e8e7e0;
@@ -126,47 +196,89 @@
       font-weight: 600;
       white-space: nowrap;
     }
-    .pill.good { background: #dcecdf; color: #214f31; }
-    .pill.warn { background: #f3dfdf; color: #7b2929; }
+
+    .pill.good {
+      background: #dcecdf;
+      color: #214f31;
+    }
+
+    .pill.warn {
+      background: #f3dfdf;
+      color: #7b2929;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
-    .col { padding: 14px 22px 22px; }
+
+    .col {
+      padding: 14px 22px 22px;
+    }
+
     .train {
       display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 12px;
+      grid-template-columns: 56px minmax(0, 1fr) auto;
+      grid-gap: 12px;
       align-items: center;
       padding: 14px 0;
       border-bottom: 1px solid var(--line);
     }
+
     .platform {
       width: 44px;
       height: 44px;
       border-radius: 999px;
       background: var(--chip);
       color: white;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 22px;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
     }
-    .dest-cn { font-size: 27px; font-weight: 800; line-height: 1.05; }
-    .dest-en { font-size: 17px; color: var(--muted); margin-top: 4px; }
-    .meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .dest-cn {
+      font-size: 27px;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .dest-en {
+      font-size: 17px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
     .time {
       font-size: 38px;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: .01em;
       text-align: right;
+      white-space: nowrap;
     }
+
+    .eta {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #777;
+      margin-top: 4px;
+      letter-spacing: normal;
+    }
+
     .panel-footer {
       display: grid;
       grid-template-columns: 1fr auto auto;
-      gap: 12px;
+      grid-gap: 12px;
       padding: 12px 18px;
       background: var(--footer);
       color: var(--muted);
@@ -174,6 +286,7 @@
       align-items: center;
       font-variant-numeric: tabular-nums;
     }
+
     .service-msg {
       margin: 12px 0 0;
       padding: 12px 14px;
@@ -184,61 +297,266 @@
       font-size: 14px;
       display: none;
     }
-    .weather {
-      white-space: nowrap;
+
+    .controls > *,
+    .statusbar > *,
+    .panel-footer > *,
+    .train > * {
+      min-width: 0;
     }
+
     @media (max-width: 900px) {
-      .controls { grid-template-columns: 1fr 1fr; }
-      .grid { grid-template-columns: 1fr; }
-      .clock { position: static; text-align: center; margin-top: 12px; }
+      .controls {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .clock {
+        position: static;
+        text-align: center;
+        margin-top: 12px;
+      }
+
       .station-cn { font-size: 34px; }
       .station-en { font-size: 20px; }
       .dest-cn { font-size: 22px; }
       .time { font-size: 28px; }
       .linebar { font-size: 16px; }
-      .panel-footer, .statusbar { grid-template-columns: 1fr; }
+
+      .panel-footer,
+      .statusbar {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .toggle-btn {
+        flex: 1 1 auto;
+      }
     }
 
-    body.grayscale {
-      filter: grayscale(1) contrast(1.04);
+    /* iPhone portrait layout */
+    @media (max-width: 600px) {
+      body { padding: 8px; }
+      .app { width: 100%; }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-gap: 8px;
+        margin: 0 0 10px;
+      }
+
+      .top-actions button {
+        margin: 0;
+      }
+
+      .toggle-btn {
+        min-width: 0;
+        width: 100%;
+        padding: 0 6px;
+        font-size: 13px;
+      }
+
+      #toggleFullscreen {
+        grid-column: 1 / -1;
+      }
+
+      .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .controls .field:first-child {
+        grid-column: 1 / -1;
+      }
+
+      label { font-size: 12px; }
+
+      select {
+        font-size: 16px;
+        padding: 0 8px;
+      }
+
+      .controls button {
+        width: 100%;
+        padding: 0 8px;
+        font-size: 14px;
+      }
+
+      .board {
+        border-width: 6px;
+        border-radius: 14px;
+      }
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 12px 14px;
+      }
+
+      .station-cn {
+        order: 1;
+        font-size: 34px;
+      }
+
+      .station-en {
+        order: 2;
+        font-size: 20px;
+      }
+
+      .clock {
+        order: 3;
+        position: static;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      .clock-time { font-size: 22px; }
+      .clock-date { font-size: 12px; }
+
+      .linebar {
+        padding: 9px 12px;
+        font-size: 14px;
+      }
+
+      .linebar-center {
+        width: 26px;
+        height: 26px;
+        margin: 0 8px;
+        border-width: 2px;
+      }
+
+      .statusbar {
+        grid-gap: 6px;
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      .pill {
+        max-width: 100%;
+        white-space: normal;
+      }
+
+      .grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* DOWN trains: Hong Kong-bound at Tsing Yi. */
+      .col-down {
+        order: -1;
+      }
+
+      .col {
+        padding: 4px 12px 12px;
+      }
+
+      .col-up {
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+
+      .train {
+        grid-template-columns: 40px minmax(0, 1fr) auto;
+        grid-gap: 8px;
+        padding: 12px 0;
+      }
+
+      .platform {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+      }
+
+      .dest-cn {
+        font-size: 21px;
+        line-height: 1.2;
+        overflow-wrap: break-word;
+      }
+
+      .dest-en {
+        font-size: 13px;
+        line-height: 1.25;
+        overflow-wrap: break-word;
+      }
+
+      .meta { font-size: 11px; }
+
+      .time {
+        font-size: 28px;
+        line-height: 1.1;
+      }
+
+      .panel-footer {
+        grid-gap: 5px;
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .service-msg {
+        font-size: 13px;
+        padding: 10px 12px;
+      }
     }
 
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    .toggle-btn {
-      min-width: 132px;
-    }
-    @media (max-width: 900px) {
-      .top-actions { justify-content: stretch; }
-      .toggle-btn { flex: 1 1 auto; }
+    @media (max-width: 360px) {
+      .col {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .train {
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        grid-gap: 6px;
+      }
+
+      .platform {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+      }
+
+      .dest-cn { font-size: 19px; }
+      .dest-en { font-size: 12px; }
+      .time { font-size: 25px; }
     }
   </style>
 </head>
-<body>
+
+<body class="grayscale">
   <div class="app">
     <div class="top-actions">
-      <button id="toggleTheme" class="toggle-btn primary">Normal color mode</button>
-      <button id="toggleWake" class="toggle-btn">Always on: Off</button>
-      <button id="toggleFullscreen" class="toggle-btn">Fit to screen</button>
+      <button id="toggleTheme" class="toggle-btn primary">
+        Normal color mode
+      </button>
+      <button id="toggleWake" class="toggle-btn">
+        Always on: Off
+      </button>
+      <button id="toggleFullscreen" class="toggle-btn">
+        Fit to screen
+      </button>
     </div>
+
     <div class="controls">
       <div class="field">
         <label for="preset">Quick preset</label>
         <select id="preset"></select>
       </div>
+
       <div class="field">
         <label for="line">Line code</label>
         <select id="line"></select>
       </div>
+
       <div class="field">
         <label for="station">Station code</label>
         <select id="station"></select>
       </div>
+
       <button id="apply" class="primary">Apply</button>
       <button id="reloadNow">Reload now</button>
     </div>
@@ -249,6 +567,7 @@
           <div class="clock-time" id="clockTime">--:--:--</div>
           <div class="clock-date" id="clockDate">----</div>
         </div>
+
         <div class="station-cn" id="stationCn">青衣</div>
         <div class="station-en" id="stationEn">Tsing Yi</div>
       </div>
@@ -261,22 +580,24 @@
 
       <div class="statusbar">
         <div class="pill" id="apiStatus">API status: loading</div>
-        <div class="pill weather" id="weather">Weather: --</div>
-        <div class="pill" id="refreshInfo">Auto refresh: 15s / full reload: 30m</div>
+        <div class="pill" id="weather">Weather: --</div>
+        <div class="pill">
+          Auto refresh: 15s / full reload: 30m
+        </div>
       </div>
 
       <div class="grid">
-        <div class="col">
+        <div class="col col-up">
           <div id="left"></div>
         </div>
-        <div class="col">
+        <div class="col col-down">
           <div id="right"></div>
         </div>
       </div>
 
       <div class="panel-footer">
         <div>MTR Next Trains</div>
-        <div id="serviceState">Service normal</div>
+        <div id="serviceState">Loading</div>
         <div id="updated">Updated --:--</div>
       </div>
     </div>
@@ -285,161 +606,94 @@
   </div>
 
   <script>
-    const lineMap = {
-      AEL: {
-        cn: '機場快綫', en: 'Airport Express',
-        stations: {
-          HOK: { cn: '香港', en: 'Hong Kong' },
-          KOW: { cn: '九龍', en: 'Kowloon' },
-          TSY: { cn: '青衣', en: 'Tsing Yi' },
-          AIR: { cn: '機場', en: 'Airport' },
-          AWE: { cn: '博覽館', en: 'AsiaWorld-Expo' }
-        },
-        dir: { up: { cn: '往機場 / 博覽館', en: 'to Airport / AsiaWorld-Expo' }, down: { cn: '往香港', en: 'to Hong Kong' } }
-      },
-      TCL: {
-        cn: '東涌綫', en: 'Tung Chung Line',
-        stations: {
-          HOK: { cn: '香港', en: 'Hong Kong' },
-          KOW: { cn: '九龍', en: 'Kowloon' },
-          OLY: { cn: '奧運', en: 'Olympic' },
-          NAC: { cn: '南昌', en: 'Nam Cheong' },
-          LAK: { cn: '荔景', en: 'Lai King' },
-          TSY: { cn: '青衣', en: 'Tsing Yi' },
-          SUN: { cn: '欣澳', en: 'Sunny Bay' },
-          TUC: { cn: '東涌', en: 'Tung Chung' }
-        },
-        dir: { up: { cn: '往東涌', en: 'to Tung Chung' }, down: { cn: '往香港', en: 'to Hong Kong' } }
-      },
-      TML: {
-        cn: '屯馬綫', en: 'Tuen Ma Line',
-        stations: {
-          WKS: { cn: '烏溪沙', en: 'Wu Kai Sha' },
-          MOS: { cn: '馬鞍山', en: 'Ma On Shan' },
-          HEO: { cn: '恆安', en: 'Heng On' },
-          TSH: { cn: '大水坑', en: 'Tai Shui Hang' },
-          SHM: { cn: '石門', en: 'Shek Mun' },
-          CIO: { cn: '第一城', en: 'City One' },
-          STW: { cn: '沙田圍', en: 'Sha Tin Wai' },
-          CKT: { cn: '車公廟', en: 'Che Kung Temple' },
-          TAW: { cn: '大圍', en: 'Tai Wai' },
-          HIK: { cn: '顯徑', en: 'Hin Keng' },
-          DIH: { cn: '鑽石山', en: 'Diamond Hill' },
-          KAT: { cn: '啟德', en: 'Kai Tak' },
-          SUW: { cn: '宋皇臺', en: 'Sung Wong Toi' },
-          TKW: { cn: '土瓜灣', en: 'To Kwa Wan' },
-          HOM: { cn: '何文田', en: 'Ho Man Tin' },
-          HUH: { cn: '紅磡', en: 'Hung Hom' },
-          ETS: { cn: '尖東', en: 'East Tsim Sha Tsui' },
-          AUS: { cn: '柯士甸', en: 'Austin' },
-          NAC: { cn: '南昌', en: 'Nam Cheong' },
-          MEF: { cn: '美孚', en: 'Mei Foo' },
-          TWW: { cn: '荃灣西', en: 'Tsuen Wan West' },
-          KSR: { cn: '錦上路', en: 'Kam Sheung Road' },
-          YUL: { cn: '元朗', en: 'Yuen Long' },
-          LOP: { cn: '朗屏', en: 'Long Ping' },
-          TIS: { cn: '天水圍', en: 'Tin Shui Wai' },
-          SIH: { cn: '兆康', en: 'Siu Hong' },
-          TUM: { cn: '屯門', en: 'Tuen Mun' }
-        },
-        dir: { up: { cn: '往屯門', en: 'to Tuen Mun' }, down: { cn: '往烏溪沙', en: 'to Wu Kai Sha' } }
-      },
-      TKL: {
-        cn: '將軍澳綫', en: 'Tseung Kwan O Line',
-        stations: {
-          NOP: { cn: '北角', en: 'North Point' },
-          QUB: { cn: '鰂魚涌', en: 'Quarry Bay' },
-          YAT: { cn: '油塘', en: 'Yau Tong' },
-          TIK: { cn: '調景嶺', en: 'Tiu Keng Leng' },
-          TKO: { cn: '將軍澳', en: 'Tseung Kwan O' },
-          LHP: { cn: '康城', en: 'LOHAS Park' },
-          HAH: { cn: '坑口', en: 'Hang Hau' },
-          POA: { cn: '寶琳', en: 'Po Lam' }
-        },
-        dir: { up: { cn: '往寶琳 / 康城', en: 'to Po Lam / LOHAS Park' }, down: { cn: '往調景嶺 / 北角', en: 'to Tiu Keng Leng / North Point' } }
-      },
-      EAL: {
-        cn: '東鐵綫', en: 'East Rail Line',
-        stations: {
-          ADM: { cn: '金鐘', en: 'Admiralty' }, EXC: { cn: '會展', en: 'Exhibition Centre' }, HUH: { cn: '紅磡', en: 'Hung Hom' },
-          MKK: { cn: '旺角東', en: 'Mong Kok East' }, KOT: { cn: '九龍塘', en: 'Kowloon Tong' }, TAW: { cn: '大圍', en: 'Tai Wai' },
-          SHT: { cn: '沙田', en: 'Sha Tin' }, FOT: { cn: '火炭', en: 'Fo Tan' }, RAC: { cn: '馬場', en: 'Racecourse' },
-          UNI: { cn: '大學', en: 'University' }, TAP: { cn: '大埔墟', en: 'Tai Po Market' }, TWO: { cn: '太和', en: 'Tai Wo' },
-          FAN: { cn: '粉嶺', en: 'Fanling' }, SHS: { cn: '上水', en: 'Sheung Shui' }, LOW: { cn: '羅湖', en: 'Lo Wu' }, LMC: { cn: '落馬洲', en: 'Lok Ma Chau' }
-        },
-        dir: { up: { cn: '往羅湖 / 落馬洲', en: 'to Lo Wu / Lok Ma Chau' }, down: { cn: '往金鐘', en: 'to Admiralty' } }
-      },
-      SIL: {
-        cn: '南港島綫', en: 'South Island Line',
-        stations: {
-          ADM: { cn: '金鐘', en: 'Admiralty' },
-          OCP: { cn: '海洋公園', en: 'Ocean Park' },
-          WCH: { cn: '黃竹坑', en: 'Wong Chuk Hang' },
-          LET: { cn: '利東', en: 'Lei Tung' },
-          SOH: { cn: '海怡半島', en: 'South Horizons' }
-        },
-        dir: { up: { cn: '往海怡半島', en: 'to South Horizons' }, down: { cn: '往金鐘', en: 'to Admiralty' } }
-      },
-      TWL: {
-        cn: '荃灣綫', en: 'Tsuen Wan Line',
-        stations: {
-          CEN: { cn: '中環', en: 'Central' }, ADM: { cn: '金鐘', en: 'Admiralty' }, TST: { cn: '尖沙咀', en: 'Tsim Sha Tsui' },
-          JOR: { cn: '佐敦', en: 'Jordan' }, YMT: { cn: '油麻地', en: 'Yau Ma Tei' }, MOK: { cn: '旺角', en: 'Mong Kok' },
-          PRE: { cn: '太子', en: 'Prince Edward' }, SSP: { cn: '深水埗', en: 'Sham Shui Po' }, CSW: { cn: '長沙灣', en: 'Cheung Sha Wan' },
-          LCK: { cn: '荔枝角', en: 'Lai Chi Kok' }, MEF: { cn: '美孚', en: 'Mei Foo' }, LAK: { cn: '荔景', en: 'Lai King' },
-          KWF: { cn: '葵芳', en: 'Kwai Fong' }, KWH: { cn: '葵興', en: 'Kwai Hing' }, TWH: { cn: '大窩口', en: 'Tai Wo Hau' }, TSW: { cn: '荃灣', en: 'Tsuen Wan' }
-        },
-        dir: { up: { cn: '往荃灣', en: 'to Tsuen Wan' }, down: { cn: '往中環', en: 'to Central' } }
-      },
-      ISL: {
-        cn: '港島綫', en: 'Island Line',
-        stations: {
-          KET: { cn: '堅尼地城', en: 'Kennedy Town' },
-          HKU: { cn: '香港大學', en: 'HKU' },
-          SYP: { cn: '西營盤', en: 'Sai Ying Pun' },
-          SHW: { cn: '上環', en: 'Sheung Wan' },
-          CEN: { cn: '中環', en: 'Central' },
-          ADM: { cn: '金鐘', en: 'Admiralty' },
-          WAC: { cn: '灣仔', en: 'Wan Chai' },
-          CAB: { cn: '銅鑼灣', en: 'Causeway Bay' },
-          TIH: { cn: '天后', en: 'Tin Hau' },
-          FOH: { cn: '炮台山', en: 'Fortress Hill' },
-          NOP: { cn: '北角', en: 'North Point' },
-          QUB: { cn: '鰂魚涌', en: 'Quarry Bay' },
-          TAK: { cn: '太古', en: 'Tai Koo' },
-          SWH: { cn: '西灣河', en: 'Sai Wan Ho' },
-          SKW: { cn: '筲箕灣', en: 'Shau Kei Wan' },
-          HFC: { cn: '杏花邨', en: 'Heng Fa Chuen' },
-          CHW: { cn: '柴灣', en: 'Chai Wan' }
-        },
-        dir: { up: { cn: '往柴灣', en: 'to Chai Wan' }, down: { cn: '往堅尼地城', en: 'to Kennedy Town' } }
-      },
-      KTL: {
-        cn: '觀塘綫', en: 'Kwun Tong Line',
-        stations: {
-          WHA: { cn: '黃埔', en: 'Whampoa' },
-          HOM: { cn: '何文田', en: 'Ho Man Tin' },
-          YMT: { cn: '油麻地', en: 'Yau Ma Tei' },
-          MOK: { cn: '旺角', en: 'Mong Kok' },
-          PRE: { cn: '太子', en: 'Prince Edward' },
-          SKM: { cn: '石硤尾', en: 'Shek Kip Mei' },
-          KOT: { cn: '九龍塘', en: 'Kowloon Tong' },
-          LOF: { cn: '樂富', en: 'Lok Fu' },
-          WTS: { cn: '黃大仙', en: 'Wong Tai Sin' },
-          DIH: { cn: '鑽石山', en: 'Diamond Hill' },
-          CHH: { cn: '彩虹', en: 'Choi Hung' },
-          KOB: { cn: '九龍灣', en: 'Kowloon Bay' },
-          NTK: { cn: '牛頭角', en: 'Ngau Tau Kok' },
-          KWT: { cn: '觀塘', en: 'Kwun Tong' },
-          LAT: { cn: '藍田', en: 'Lam Tin' },
-          YAT: { cn: '油塘', en: 'Yau Tong' },
-          TIK: { cn: '調景嶺', en: 'Tiu Keng Leng' }
-        },
-        dir: { up: { cn: '往調景嶺', en: 'to Tiu Keng Leng' }, down: { cn: '往黃埔', en: 'to Whampoa' } }
-      }
+    /*
+     * Station data format:
+     * CODE|Chinese name|English name
+     */
+    function makeLine(cn, en, stationText, upCn, upEn, downCn, downEn) {
+      var stations = {};
+      stationText.split(';').forEach(function(entry) {
+        var parts = entry.split('|');
+        stations[parts[0]] = { cn: parts[1], en: parts[2] };
+      });
+
+      return {
+        cn: cn,
+        en: en,
+        stations: stations,
+        dir: {
+          up: { cn: upCn, en: upEn },
+          down: { cn: downCn, en: downEn }
+        }
+      };
+    }
+
+    var lineMap = {
+      AEL: makeLine(
+        '機場快綫', 'Airport Express',
+        'HOK|香港|Hong Kong;KOW|九龍|Kowloon;TSY|青衣|Tsing Yi;AIR|機場|Airport;AWE|博覽館|AsiaWorld-Expo',
+        '往機場 / 博覽館', 'to Airport / AsiaWorld-Expo',
+        '往香港', 'to Hong Kong'
+      ),
+
+      TCL: makeLine(
+        '東涌綫', 'Tung Chung Line',
+        'HOK|香港|Hong Kong;KOW|九龍|Kowloon;OLY|奧運|Olympic;NAC|南昌|Nam Cheong;LAK|荔景|Lai King;TSY|青衣|Tsing Yi;SUN|欣澳|Sunny Bay;TUC|東涌|Tung Chung',
+        '往東涌', 'to Tung Chung',
+        '往香港', 'to Hong Kong'
+      ),
+
+      TML: makeLine(
+        '屯馬綫', 'Tuen Ma Line',
+        'WKS|烏溪沙|Wu Kai Sha;MOS|馬鞍山|Ma On Shan;HEO|恆安|Heng On;TSH|大水坑|Tai Shui Hang;SHM|石門|Shek Mun;CIO|第一城|City One;STW|沙田圍|Sha Tin Wai;CKT|車公廟|Che Kung Temple;TAW|大圍|Tai Wai;HIK|顯徑|Hin Keng;DIH|鑽石山|Diamond Hill;KAT|啟德|Kai Tak;SUW|宋皇臺|Sung Wong Toi;TKW|土瓜灣|To Kwa Wan;HOM|何文田|Ho Man Tin;HUH|紅磡|Hung Hom;ETS|尖東|East Tsim Sha Tsui;AUS|柯士甸|Austin;NAC|南昌|Nam Cheong;MEF|美孚|Mei Foo;TWW|荃灣西|Tsuen Wan West;KSR|錦上路|Kam Sheung Road;YUL|元朗|Yuen Long;LOP|朗屏|Long Ping;TIS|天水圍|Tin Shui Wai;SIH|兆康|Siu Hong;TUM|屯門|Tuen Mun',
+        '往屯門', 'to Tuen Mun',
+        '往烏溪沙', 'to Wu Kai Sha'
+      ),
+
+      TKL: makeLine(
+        '將軍澳綫', 'Tseung Kwan O Line',
+        'NOP|北角|North Point;QUB|鰂魚涌|Quarry Bay;YAT|油塘|Yau Tong;TIK|調景嶺|Tiu Keng Leng;TKO|將軍澳|Tseung Kwan O;LHP|康城|LOHAS Park;HAH|坑口|Hang Hau;POA|寶琳|Po Lam',
+        '往寶琳 / 康城', 'to Po Lam / LOHAS Park',
+        '往調景嶺 / 北角', 'to Tiu Keng Leng / North Point'
+      ),
+
+      EAL: makeLine(
+        '東鐵綫', 'East Rail Line',
+        'ADM|金鐘|Admiralty;EXC|會展|Exhibition Centre;HUH|紅磡|Hung Hom;MKK|旺角東|Mong Kok East;KOT|九龍塘|Kowloon Tong;TAW|大圍|Tai Wai;SHT|沙田|Sha Tin;FOT|火炭|Fo Tan;RAC|馬場|Racecourse;UNI|大學|University;TAP|大埔墟|Tai Po Market;TWO|太和|Tai Wo;FAN|粉嶺|Fanling;SHS|上水|Sheung Shui;LOW|羅湖|Lo Wu;LMC|落馬洲|Lok Ma Chau',
+        '往羅湖 / 落馬洲', 'to Lo Wu / Lok Ma Chau',
+        '往金鐘', 'to Admiralty'
+      ),
+
+      SIL: makeLine(
+        '南港島綫', 'South Island Line',
+        'ADM|金鐘|Admiralty;OCP|海洋公園|Ocean Park;WCH|黃竹坑|Wong Chuk Hang;LET|利東|Lei Tung;SOH|海怡半島|South Horizons',
+        '往海怡半島', 'to South Horizons',
+        '往金鐘', 'to Admiralty'
+      ),
+
+      TWL: makeLine(
+        '荃灣綫', 'Tsuen Wan Line',
+        'CEN|中環|Central;ADM|金鐘|Admiralty;TST|尖沙咀|Tsim Sha Tsui;JOR|佐敦|Jordan;YMT|油麻地|Yau Ma Tei;MOK|旺角|Mong Kok;PRE|太子|Prince Edward;SSP|深水埗|Sham Shui Po;CSW|長沙灣|Cheung Sha Wan;LCK|荔枝角|Lai Chi Kok;MEF|美孚|Mei Foo;LAK|荔景|Lai King;KWF|葵芳|Kwai Fong;KWH|葵興|Kwai Hing;TWH|大窩口|Tai Wo Hau;TSW|荃灣|Tsuen Wan',
+        '往荃灣', 'to Tsuen Wan',
+        '往中環', 'to Central'
+      ),
+
+      ISL: makeLine(
+        '港島綫', 'Island Line',
+        'KET|堅尼地城|Kennedy Town;HKU|香港大學|HKU;SYP|西營盤|Sai Ying Pun;SHW|上環|Sheung Wan;CEN|中環|Central;ADM|金鐘|Admiralty;WAC|灣仔|Wan Chai;CAB|銅鑼灣|Causeway Bay;TIH|天后|Tin Hau;FOH|炮台山|Fortress Hill;NOP|北角|North Point;QUB|鰂魚涌|Quarry Bay;TAK|太古|Tai Koo;SWH|西灣河|Sai Wan Ho;SKW|筲箕灣|Shau Kei Wan;HFC|杏花邨|Heng Fa Chuen;CHW|柴灣|Chai Wan',
+        '往柴灣', 'to Chai Wan',
+        '往堅尼地城', 'to Kennedy Town'
+      ),
+
+      KTL: makeLine(
+        '觀塘綫', 'Kwun Tong Line',
+        'WHA|黃埔|Whampoa;HOM|何文田|Ho Man Tin;YMT|油麻地|Yau Ma Tei;MOK|旺角|Mong Kok;PRE|太子|Prince Edward;SKM|石硤尾|Shek Kip Mei;KOT|九龍塘|Kowloon Tong;LOF|樂富|Lok Fu;WTS|黃大仙|Wong Tai Sin;DIH|鑽石山|Diamond Hill;CHH|彩虹|Choi Hung;KOB|九龍灣|Kowloon Bay;NTK|牛頭角|Ngau Tau Kok;KWT|觀塘|Kwun Tong;LAT|藍田|Lam Tin;YAT|油塘|Yau Tong;TIK|調景嶺|Tiu Keng Leng',
+        '往調景嶺', 'to Tiu Keng Leng',
+        '往黃埔', 'to Whampoa'
+      )
     };
 
-    const presets = [
+    var presets = [
       { name: '東涌綫｜青衣 Tsing Yi', line: 'TCL', sta: 'TSY' },
       { name: '東涌綫｜荔景 Lai King', line: 'TCL', sta: 'LAK' },
       { name: '東涌綫｜香港 Hong Kong', line: 'TCL', sta: 'HOK' },
@@ -448,331 +702,561 @@
       { name: '東鐵綫｜金鐘 Admiralty', line: 'EAL', sta: 'ADM' }
     ];
 
-    const presetEl = document.getElementById('preset');
-    const lineEl = document.getElementById('line');
-    const stationEl = document.getElementById('station');
-    const stationCnEl = document.getElementById('stationCn');
-    const stationEnEl = document.getElementById('stationEn');
-    const lineCnEl = document.getElementById('lineCn');
-    const lineEnEl = document.getElementById('lineEn');
-    const apiStatusEl = document.getElementById('apiStatus');
-    const weatherEl = document.getElementById('weather');
-    const serviceStateEl = document.getElementById('serviceState');
-    const serviceMsgEl = document.getElementById('serviceMsg');
-    const toggleThemeBtn = document.getElementById('toggleTheme');
-    const toggleWakeBtn = document.getElementById('toggleWake');
-    const toggleFullscreenBtn = document.getElementById('toggleFullscreen');
-    let wakeLock = null;
-    const updatedEl = document.getElementById('updated');
-    const leftEl = document.getElementById('left');
-    const rightEl = document.getElementById('right');
+    function el(id) {
+      return document.getElementById(id);
+    }
+
+    var presetEl = el('preset');
+    var lineEl = el('line');
+    var stationEl = el('station');
+    var leftEl = el('left');
+    var rightEl = el('right');
+    var apiStatusEl = el('apiStatus');
+    var serviceStateEl = el('serviceState');
+    var serviceMsgEl = el('serviceMsg');
+    var updatedEl = el('updated');
+    var themeBtn = el('toggleTheme');
+    var wakeBtn = el('toggleWake');
+    var fullscreenBtn = el('toggleFullscreen');
+
+    var activeLine = 'TCL';
+    var activeStation = 'TSY';
+    var requestNumber = 0;
+    var wakeLock = null;
+    var wakeWanted = false;
+
+    function pad(n) {
+      return ('0' + n).slice(-2);
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /*
+     * Explicit parsing avoids browser-dependent Date(string).
+     * Timestamps without a timezone are interpreted as Hong Kong time.
+     */
+    function parseTrainTime(value) {
+      if (!value) return NaN;
+
+      var match = String(value).trim().match(
+        /^(\d{4})[-\/](\d{2})[-\/](\d{2})[T\s]+(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:\s*(Z|[+-]\d{2}:?\d{2}))?$/i
+      );
+
+      if (!match) return NaN;
+
+      var year = Number(match[1]);
+      var month = Number(match[2]);
+      var day = Number(match[3]);
+      var hour = Number(match[4]);
+      var minute = Number(match[5]);
+      var second = Number(match[6] || 0);
+
+      if (
+        month < 1 || month > 12 ||
+        day < 1 || day > 31 ||
+        hour > 23 || minute > 59 || second > 59
+      ) {
+        return NaN;
+      }
+
+      var offsetMinutes = 480;
+      var zone = match[7];
+
+      if (zone && zone.toUpperCase() === 'Z') {
+        offsetMinutes = 0;
+      } else if (zone) {
+        var cleanZone = zone.replace(':', '');
+        var zoneHours = Number(cleanZone.slice(1, 3));
+        var zoneMinutes = Number(cleanZone.slice(3, 5));
+
+        if (zoneHours > 23 || zoneMinutes > 59) return NaN;
+
+        offsetMinutes = (zoneHours * 60 + zoneMinutes) *
+          (cleanZone.charAt(0) === '-' ? -1 : 1);
+      }
+
+      return Date.UTC(
+        year, month - 1, day, hour, minute, second
+      ) - offsetMinutes * 60000;
+    }
+
+    function hongKongDate(timestamp) {
+      return new Date(timestamp + 480 * 60000);
+    }
+
+    function formatTime(value) {
+      var timestamp = parseTrainTime(value);
+      if (isNaN(timestamp)) return '--:--';
+
+      var date = hongKongDate(timestamp);
+      return pad(date.getUTCHours()) + ':' +
+             pad(date.getUTCMinutes());
+    }
+
+    function countdown(timestamp) {
+      if (isNaN(timestamp)) return '';
+
+      var remaining = timestamp - Date.now();
+
+      if (remaining < -60000) return 'Departed';
+      if (remaining < 60000) return 'Now';
+
+      var minutes = Math.ceil(remaining / 60000);
+      return 'in ' + minutes + (minutes === 1 ? ' min' : ' mins');
+    }
+
+    function updateCountdowns() {
+      var nodes = document.querySelectorAll('.eta[data-arrival]');
+
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].textContent = countdown(
+          Number(nodes[i].getAttribute('data-arrival'))
+        );
+      }
+    }
+
+    function updateClock() {
+      var now = hongKongDate(Date.now());
+      var weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      var months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+
+      el('clockTime').textContent =
+        pad(now.getUTCHours()) + ':' +
+        pad(now.getUTCMinutes()) + ':' +
+        pad(now.getUTCSeconds());
+
+      el('clockDate').textContent =
+        weekdays[now.getUTCDay()] + ', ' +
+        now.getUTCDate() + ' ' +
+        months[now.getUTCMonth()] + ' ' +
+        now.getUTCFullYear();
+
+      updateCountdowns();
+    }
+
+    function addOption(select, value, label) {
+      var option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      select.appendChild(option);
+    }
 
     function buildPresets() {
-      presetEl.innerHTML = presets.map((p, i) => `<option value="${i}">${p.name}</option>`).join('');
+      presetEl.innerHTML = '';
+
+      presets.forEach(function(preset, index) {
+        addOption(presetEl, index, preset.name);
+      });
     }
 
     function buildLines() {
-      lineEl.innerHTML = Object.entries(lineMap).map(([code, data]) => `<option value="${code}">${code} — ${data.cn} / ${data.en}</option>`).join('');
+      lineEl.innerHTML = '';
+
+      Object.keys(lineMap).forEach(function(code) {
+        var line = lineMap[code];
+        addOption(
+          lineEl, code,
+          code + ' — ' + line.cn + ' / ' + line.en
+        );
+      });
     }
 
-    function buildStations(selectedLine) {
-      const stations = lineMap[selectedLine].stations;
-      stationEl.innerHTML = Object.entries(stations).map(([code, data]) => `<option value="${code}">${code} — ${data.cn} / ${data.en}</option>`).join('');
-    }
+    function buildStations(code) {
+      stationEl.innerHTML = '';
 
-    function applySelection(line, sta) {
-      lineEl.value = line;
-      buildStations(line);
-      stationEl.value = sta;
-      const lineData = lineMap[line];
-      const staData = lineData.stations[sta];
-      lineCnEl.textContent = lineData.cn;
-      lineEnEl.textContent = lineData.en;
-      stationCnEl.textContent = staData.cn;
-      stationEnEl.textContent = staData.en;
-      fetchMtr();
-    }
-
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clockTime').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-      document.getElementById('clockDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    }
-
-    function formatTime(s) {
-      if (!s) return '--:--';
-      var str = String(s).trim();
-      var m = str.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
-      if (!m) return '--:--';
-      var year   = Number(m[1]);
-      var month  = Number(m[2]) - 1;
-      var day    = Number(m[3]);
-      var hour   = Number(m[4]);
-      var minute = Number(m[5]);
-      var second = Number(m[6]);
-      var d = new Date(year, month, day, hour, minute, second);
-      if (isNaN(d.getTime())) return '--:--';
-      return pad(d.getHours()) + ':' + pad(d.getMinutes());
-    }
-
-    function diffMinutesFromNow(s) {
-      if (!s) return '';
-      var str = String(s).trim();
-      str = str.replace(/(Z|[+-]\d{2}:?\d{2})$/, '');
-      str = str.replace('T', ' ');
-      if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(str)) {
-        str = str + ':00';
-      }
-      var m = str.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
-      if (!m) return '';
-      var year   = Number(m[1]);
-      var month  = Number(m[2]) - 1;
-      var day    = Number(m[3]);
-      var hour   = Number(m[4]);
-      var minute = Number(m[5]);
-      var second = Number(m[6]);
-      var target = new Date(year, month, day, hour, minute, second);
-      if (isNaN(target.getTime())) return '';
-      var now = new Date();
-      var diffMs = target.getTime() - now.getTime();
-      var diffMin = Math.round(diffMs / 60000);
-      if (diffMin < 0) return '';
-      if (diffMin === 0) return 'Now';
-      if (diffMin === 1) return '1 min';
-      return diffMin + ' mins';
-    }
-
-    function row(item, dirTextCn, dirTextEn) {
-      const plat = item && item.plat ? item.plat : '-';
-      const timeStr = item && item.time ? formatTime(item.time) : '--:--';
-      const etaStr = item && item.time ? diffMinutesFromNow(item.time) : '';
-      const extra = item && item.timetype ? 'Type: ' + item.timetype : 'Seq ' + ((item && item.seq) ? item.seq : '-');
-      return `
-        <div class="train">
-          <div class="platform">${plat}</div>
-          <div>
-            <div class="dest-cn">${dirTextCn}</div>
-            <div class="dest-en">${dirTextEn}</div>
-            <div class="meta">${extra}</div>
-          </div>
-          <div class="time">
-            <div>${timeStr}</div>
-            <div style="font-size:14px;color:#777;margin-top:4px;">${etaStr}</div>
-          </div>
-        </div>`;
+      Object.keys(lineMap[code].stations).forEach(function(stationCode) {
+        var station = lineMap[code].stations[stationCode];
+        addOption(
+          stationEl, stationCode,
+          stationCode + ' — ' + station.cn + ' / ' + station.en
+        );
+      });
     }
 
     function emptyRow() {
-      return `
-        <div class="train">
-          <div class="platform">-</div>
-          <div>
-            <div class="dest-cn">暫無資料</div>
-            <div class="dest-en">No data</div>
-            <div class="meta">Waiting for update</div>
-          </div>
-          <div class="time">
-            <div>--:--</div>
-            <div style="font-size:14px;color:#777;margin-top:4px;"></div>
-          </div>
-        </div>`;
+      return '<div class="train">' +
+        '<div class="platform">-</div>' +
+        '<div>' +
+          '<div class="dest-cn">暫無資料</div>' +
+          '<div class="dest-en">No data</div>' +
+          '<div class="meta">Waiting for update</div>' +
+        '</div>' +
+        '<div class="time">--:--</div>' +
+      '</div>';
     }
 
-    async function fetchWeather() {
-      try {
-        const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
-        const data = await res.json();
-        var temp = data && data.temperature && data.temperature.data && data.temperature.data[0] ? data.temperature.data[0].value : '--';
-        var hum = data && data.humidity && data.humidity.data && data.humidity.data[0] ? data.humidity.data[0].value : '--';
-        weatherEl.textContent = 'Weather: ' + temp + '°C / RH ' + hum + '%';
-      } catch (e) {
-        weatherEl.textContent = 'Weather: unavailable';
+    function row(item, direction) {
+      var timestamp = parseTrainTime(item.time);
+      var extra = item.timetype ?
+        'Type: ' + item.timetype :
+        'Seq ' + (item.seq || '-');
+
+      var eta = isNaN(timestamp) ? '' :
+        '<div class="eta" data-arrival="' + timestamp + '">' +
+          escapeHtml(countdown(timestamp)) +
+        '</div>';
+
+      return '<div class="train">' +
+        '<div class="platform">' +
+          escapeHtml(item.plat || '-') +
+        '</div>' +
+        '<div>' +
+          '<div class="dest-cn">' +
+            escapeHtml(direction.cn) +
+          '</div>' +
+          '<div class="dest-en">' +
+            escapeHtml(direction.en) +
+          '</div>' +
+          '<div class="meta">' + escapeHtml(extra) + '</div>' +
+        '</div>' +
+        '<div class="time">' +
+          '<div>' + formatTime(item.time) + '</div>' +
+          eta +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderDirection(target, items, direction) {
+      if (!Array.isArray(items) || !items.length) {
+        target.innerHTML = emptyRow();
+        return;
       }
+
+      target.innerHTML = items.slice(0, 4).map(function(item) {
+        return row(item, direction);
+      }).join('');
+    }
+
+    function setStatus(text, type) {
+      apiStatusEl.textContent = 'API status: ' + text;
+      apiStatusEl.className = 'pill' + (type ? ' ' + type : '');
     }
 
     async function fetchMtr() {
-      const line = lineEl.value;
-      const sta = stationEl.value;
-      const api = `https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=${line}&sta=${sta}&lang=TC`;
-      const key = `${line}-${sta}`;
-      const lineData = lineMap[line];
-      apiStatusEl.textContent = 'API status: loading';
-      apiStatusEl.className = 'pill';
-      serviceMsgEl.style.display = 'none';
-      serviceMsgEl.textContent = '';
-      try {
-        const res = await fetch(api);
-        const json = await res.json();
+      var thisRequest = ++requestNumber;
+      var line = activeLine;
+      var station = activeStation;
+      var key = line + '-' + station;
 
-        if (json.status === 0) {
-          apiStatusEl.textContent = 'API status: alert';
-          apiStatusEl.className = 'pill warn';
+      setStatus('loading', '');
+      serviceMsgEl.style.display = 'none';
+
+      try {
+        var response = await fetch(
+          'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php' +
+          '?line=' + encodeURIComponent(line) +
+          '&sta=' + encodeURIComponent(station) +
+          '&lang=TC',
+          { cache: 'no-store' }
+        );
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        var json = await response.json();
+
+        /* Ignore an older request after changing stations. */
+        if (thisRequest !== requestNumber) return;
+
+        if (Number(json.status) === 0) {
+          setStatus('alert', 'warn');
           serviceStateEl.textContent = 'Service alert';
+          serviceMsgEl.textContent =
+            json.message || 'Train information is unavailable.';
           serviceMsgEl.style.display = 'block';
-          serviceMsgEl.textContent = json.message || 'Special train service arrangements are in place.';
           leftEl.innerHTML = emptyRow();
           rightEl.innerHTML = emptyRow();
           updatedEl.textContent = 'Updated --:--';
           return;
         }
 
-        const payload = json.data && json.data[key] ? json.data[key] : {};
-        var up = payload.UP || [];
-        var down = payload.DOWN || [];
+        var payload = json.data && json.data[key];
 
-        leftEl.innerHTML = (up.length ? up.slice(0,4) : [null]).map(function(item) {
-          return item ? row(item, lineData.dir.up.cn, lineData.dir.up.en) : emptyRow();
-        }).join('');
+        if (!payload) {
+          throw new Error('No station data in API response');
+        }
 
-        rightEl.innerHTML = (down.length ? down.slice(0,4) : [null]).map(function(item) {
-          return item ? row(item, lineData.dir.down.cn, lineData.dir.down.en) : emptyRow();
-        }).join('');
+        renderDirection(
+          leftEl, payload.UP || [], lineMap[line].dir.up
+        );
+
+        renderDirection(
+          rightEl, payload.DOWN || [], lineMap[line].dir.down
+        );
 
         var delayed = json.isdelay === 'Y';
-        apiStatusEl.textContent = delayed ? 'API status: delayed / limited data' : 'API status: normal';
-        apiStatusEl.className = delayed ? 'pill warn' : 'pill good';
-        serviceStateEl.textContent = delayed ? 'Delay / limited data' : 'Service normal';
-        updatedEl.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-      } catch (e) {
-        apiStatusEl.textContent = 'API status: error';
-        apiStatusEl.className = 'pill warn';
+        setStatus(
+          delayed ? 'delayed / limited data' : 'normal',
+          delayed ? 'warn' : 'good'
+        );
+
+        serviceStateEl.textContent =
+          delayed ? 'Delay / limited data' : 'Service normal';
+
+        var now = hongKongDate(Date.now());
+        updatedEl.textContent =
+          'Updated ' + pad(now.getUTCHours()) + ':' +
+          pad(now.getUTCMinutes()) + ':' +
+          pad(now.getUTCSeconds());
+
+      } catch (error) {
+        if (thisRequest !== requestNumber) return;
+
+        setStatus('error', 'warn');
         serviceStateEl.textContent = 'Connection error';
+        serviceMsgEl.textContent =
+          'Unable to update train information: ' + error.message;
+        serviceMsgEl.style.display = 'block';
+
+        /* Do not leave an old schedule looking current. */
         leftEl.innerHTML = emptyRow();
         rightEl.innerHTML = emptyRow();
+        updatedEl.textContent = 'Updated --:--';
+
+        if (window.console) console.error(error);
       }
     }
 
-    function getFullscreenElement() {
-      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    async function fetchWeather() {
+      try {
+        var response = await fetch(
+          'https://data.weather.gov.hk/weatherAPI/opendata/' +
+          'weather.php?dataType=rhrread&lang=tc'
+        );
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        var data = await response.json();
+        var temperature =
+          data.temperature && data.temperature.data &&
+          data.temperature.data[0] ?
+          data.temperature.data[0].value : '--';
+
+        var humidity =
+          data.humidity && data.humidity.data &&
+          data.humidity.data[0] ?
+          data.humidity.data[0].value : '--';
+
+        el('weather').textContent =
+          'Weather: ' + temperature + '°C / RH ' + humidity + '%';
+
+      } catch (error) {
+        el('weather').textContent = 'Weather: unavailable';
+      }
+    }
+
+    function applySelection(line, station) {
+      if (!lineMap[line] || !lineMap[line].stations[station]) return;
+
+      activeLine = line;
+      activeStation = station;
+
+      lineEl.value = line;
+      buildStations(line);
+      stationEl.value = station;
+
+      var lineData = lineMap[line];
+      var stationData = lineData.stations[station];
+
+      el('lineCn').textContent = lineData.cn;
+      el('lineEn').textContent = lineData.en;
+      el('stationCn').textContent = stationData.cn;
+      el('stationEn').textContent = stationData.en;
+
+      leftEl.innerHTML = emptyRow();
+      rightEl.innerHTML = emptyRow();
+
+      fetchMtr();
+    }
+
+    function fullscreenElement() {
+      return document.fullscreenElement ||
+             document.webkitFullscreenElement ||
+             null;
     }
 
     function syncFullscreenButton() {
-      var active = !!getFullscreenElement();
-      toggleFullscreenBtn.textContent = active ? 'Exit full screen' : 'Fit to screen';
+      fullscreenBtn.textContent =
+        fullscreenElement() ? 'Exit full screen' : 'Fit to screen';
     }
 
-    async function enterFullscreen() {
-      var elem = document.documentElement;
+    async function toggleFullscreen() {
       try {
-        if (elem.requestFullscreen) {
-          await elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-          await elem.webkitRequestFullscreen();
+        if (fullscreenElement()) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
         } else {
-          alert('Fullscreen is not supported on this iPad/browser.');
+          var root = document.documentElement;
+
+          if (root.requestFullscreen) {
+            await root.requestFullscreen();
+          } else if (root.webkitRequestFullscreen) {
+            root.webkitRequestFullscreen();
+          } else {
+            alert(
+              'Fullscreen is unavailable in this browser. ' +
+              'On iPhone or iPad, try Safari → Share → ' +
+              'Add to Home Screen, then open the saved icon.'
+            );
+          }
         }
-      } catch (e) {
-        alert('Unable to enter fullscreen on this iPad/browser.');
+      } catch (error) {
+        alert('Unable to change fullscreen mode: ' + error.message);
       }
-    }
 
-    async function exitFullscreen() {
-      try {
-        if (document.exitFullscreen && document.fullscreenElement) {
-          await document.exitFullscreen();
-        } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
-          await document.webkitExitFullscreen();
-        }
-      } catch (e) {}
-    }
-
-    async function enableWakeLock() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-          toggleWakeBtn.textContent = 'Always on: On';
-          wakeLock.addEventListener('release', function() {
-            toggleWakeBtn.textContent = 'Always on: Off';
-          });
-        } else {
-          alert('Wake Lock is not supported on this browser/device.');
-        }
-      } catch (e) {
-        toggleWakeBtn.textContent = 'Always on: Off';
-      }
-    }
-
-    async function disableWakeLock() {
-      try {
-        if (wakeLock) {
-          await wakeLock.release();
-          wakeLock = null;
-        }
-      } catch (e) {}
-      toggleWakeBtn.textContent = 'Always on: Off';
+      syncFullscreenButton();
     }
 
     function syncButtons() {
-      toggleThemeBtn.textContent = document.body.classList.contains('grayscale') ? 'Normal color mode' : 'Gray / night mode';
-      toggleWakeBtn.textContent = wakeLock ? 'Always on: On' : 'Always on: Off';
+      themeBtn.textContent =
+        document.body.classList.contains('grayscale') ?
+        'Normal color mode' : 'Gray / night mode';
+
+      wakeBtn.textContent =
+        wakeLock && !wakeLock.released ?
+        'Always on: On' : 'Always on: Off';
     }
 
-    toggleThemeBtn.addEventListener('click', function() {
+    async function acquireWakeLock() {
+      if (
+        !wakeWanted ||
+        document.visibilityState !== 'visible' ||
+        (wakeLock && !wakeLock.released)
+      ) {
+        return;
+      }
+
+      try {
+        var lock = await navigator.wakeLock.request('screen');
+
+        if (!wakeWanted) {
+          await lock.release();
+          return;
+        }
+
+        wakeLock = lock;
+
+        lock.addEventListener('release', function() {
+          if (wakeLock === lock) wakeLock = null;
+          syncButtons();
+        });
+
+      } catch (error) {
+        wakeLock = null;
+      }
+
+      syncButtons();
+    }
+
+    themeBtn.addEventListener('click', function() {
       document.body.classList.toggle('grayscale');
       syncButtons();
-      syncFullscreenButton();
     });
 
-    toggleWakeBtn.addEventListener('click', async function() {
-      if (wakeLock) {
-        await disableWakeLock();
-      } else {
-        await enableWakeLock();
+    wakeBtn.addEventListener('click', async function() {
+      if (
+        !navigator.wakeLock ||
+        !navigator.wakeLock.request
+      ) {
+        alert(
+          'Automatic screen wake lock is unavailable in this browser. ' +
+          'You can instead adjust the device Auto-Lock setting.'
+        );
+        return;
       }
+
+      wakeWanted = !wakeWanted;
+
+      if (wakeWanted) {
+        await acquireWakeLock();
+      } else {
+        var lock = wakeLock;
+        wakeLock = null;
+
+        if (lock) {
+          try {
+            await lock.release();
+          } catch (error) {}
+        }
+      }
+
       syncButtons();
-      syncFullscreenButton();
     });
 
-    document.addEventListener('visibilitychange', async function() {
-      if (document.visibilityState === 'visible' && wakeLock) {
-        await enableWakeLock();
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener(
+      'fullscreenchange', syncFullscreenButton
+    );
+
+    document.addEventListener(
+      'webkitfullscreenchange', syncFullscreenButton
+    );
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        updateClock();
+        fetchMtr();
+
+        if (wakeWanted) acquireWakeLock();
       }
     });
-
-    toggleFullscreenBtn.addEventListener('click', async function() {
-      if (getFullscreenElement()) {
-        await exitFullscreen();
-      } else {
-        await enterFullscreen();
-      }
-      syncFullscreenButton();
-    });
-
-    document.addEventListener('fullscreenchange', syncFullscreenButton);
-    document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
-
-    buildPresets();
-    buildLines();
-    buildStations('TCL');
-    applySelection('TCL', 'TSY');
-    fetchWeather();
-    updateClock();
 
     presetEl.addEventListener('change', function() {
-      var p = presets[Number(presetEl.value)];
-      applySelection(p.line, p.sta);
+      var preset = presets[Number(presetEl.value)];
+
+      if (preset) {
+        applySelection(preset.line, preset.sta);
+      }
     });
+
     lineEl.addEventListener('change', function() {
       buildStations(lineEl.value);
     });
-    document.getElementById('apply').addEventListener('click', function() {
+
+    el('apply').addEventListener('click', function() {
       applySelection(lineEl.value, stationEl.value);
     });
-    document.getElementById('reloadNow').addEventListener('click', function() {
+
+    el('reloadNow').addEventListener('click', function() {
       fetchMtr();
       fetchWeather();
     });
 
-    document.body.classList.add('grayscale');
+    buildPresets();
+    buildLines();
+
+    /* Default: Tung Chung Line, Tsing Yi station. */
+    applySelection('TCL', 'TSY');
+
+    fetchWeather();
+    updateClock();
     syncButtons();
     syncFullscreenButton();
 
     setInterval(updateClock, 1000);
     setInterval(fetchMtr, 15000);
     setInterval(fetchWeather, 600000);
-    setTimeout(function() { location.reload(); }, 1800000);
+
+    setTimeout(function() {
+      location.reload();
+    }, 1800000);
   </script>
 </body>
 </html>
